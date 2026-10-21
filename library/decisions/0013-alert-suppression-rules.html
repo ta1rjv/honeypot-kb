@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted) - Honeypot Intelligence</title>
+<meta name="description" content="known harmless probes (for example the Group B loader capability probe, command hash d882d096...) raise one medium alert per source IP per day and bury real alerts. Detection and classification are...">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/library/tr/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/decisions/0013-alert-suppression-rules.html">
+<link rel="stylesheet" href="../assets/library.css">
+<script>try{var t=localStorage.getItem("hpkb-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body class="page-document" data-root="../" data-assets="../" data-lang="en" data-i18n="{&quot;search_all&quot;:&quot;All results for&quot;,&quot;search_none&quot;:&quot;No results.&quot;,&quot;search_results_for&quot;:&quot;result(s) for&quot;}">
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+<a class="brand" href="../index.html"><svg class="logo" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="11" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 13.6V17" stroke="currentColor" stroke-width="1.4"/></svg><span>Honeypot <em>Intelligence</em></span></a>
+<form class="search" action="../search.html" role="search"><label for="q" class="vh">Search the site</label><input id="q" name="q" type="search" placeholder="Search the site" autocomplete="off" aria-controls="search-pop"><div id="search-pop" class="search-pop" hidden></div></form>
+<nav class="lang" aria-label="Language"><a href="0013-alert-suppression-rules.html" hreflang="en" lang="en" aria-current="true">EN</a><a href="../tr/decisions/0013-alert-suppression-rules.html" hreflang="tr" lang="tr">TR</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch between light and dark theme" title="Switch between light and dark theme"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site contents"><details open><summary>Site contents</summary>
+<ul class="nav-top"><li><a href="../index.html">Home</a></li><li><a href="../search.html">Search</a></li></ul>
+<h2 class="nav-h">Start</h2><ul>
+<li><a href="../pages/overview.html">Overview</a></li>
+</ul>
+<h2 class="nav-h">Platform</h2><ul>
+<li><a href="../pages/architecture.html">Architecture</a></li>
+<li><a href="../pages/containment.html">Containment</a></li>
+<li><a href="../pages/intelligence-pipeline.html">Intelligence pipeline</a></li>
+</ul>
+<h2 class="nav-h">Findings</h2><ul>
+<li><a href="../pages/attack-landscape.html">Attack landscape</a></li>
+<li><a href="../pages/campaigns.html">Campaigns</a></li>
+<li><a href="../pages/indicators.html">Indicators</a></li>
+</ul>
+<h2 class="nav-h">Project</h2><ul>
+<li><a href="../pages/operations-history.html">Operations history</a></li>
+<li><a href="../pages/decisions.html">Decisions</a></li>
+<li><a href="../pages/research.html">Research</a></li>
+<li><a href="../pages/glossary.html">Glossary</a></li>
+<li><a href="../pages/about.html">About</a></li>
+</ul>
+<h2 class="nav-h">Documents</h2><ul>
+<li class="nav-shelf">Core documents</li>
+<li><a href="../volumes/readme.html">Honeypot Intelligence Platform</a></li>
+<li><a href="../volumes/architecture.html">Architecture</a></li>
+<li><a href="../volumes/threat-model.html">Threat Model</a></li>
+<li><a href="../volumes/data-model.html">Data Model</a></li>
+<li><a href="../volumes/api.html">API</a></li>
+<li class="nav-shelf">Requirements and validation</li>
+<li><a href="../volumes/requirements.html">Requirements Document - honeypot-intelligence</a></li>
+<li><a href="../volumes/assumptions.html">Assumptions</a></li>
+</ul>
+<h2 class="nav-h">Architecture decisions</h2><ul>
+<li><a href="readme.html">Architecture Decision Records</a></li>
+<li><a href="0001-cowrie-as-honeypot.html">ADR 0001: Cowrie as the SSH honeypot</a></li>
+<li><a href="0002-direct-port-22-binding.html">ADR 0002: Cowrie binds tcp/22 directly with CAP_NET_BIND_SERVICE</a></li>
+<li><a href="0003-containment-by-uid.html">ADR 0003: Containment by uid, no honeypot egress at all</a></li>
+<li><a href="0004-sqlite-portable-schema.html">ADR 0004: SQLite now, PostgreSQL-compatible schema</a></li>
+<li><a href="0005-fastapi-websocket-react.html">ADR 0005: FastAPI + WebSocket backend, React dashboard served by the backend</a></li>
+<li><a href="0006-offline-release.html">ADR 0006: Offline release tarball with a wheelhouse</a></li>
+<li><a href="0007-ip-intelligence-sources.html">ADR 0007: IP intelligence from DNS-based sources</a></li>
+<li><a href="0008-evidence-confidence-model.html">ADR 0008: Evidence and confidence model</a></li>
+<li><a href="0010-keep-all-logs-for-research.html">ADR 0010: Keep all captured logs for research (effectively unlimited retention)</a></li>
+<li><a href="0011-webhook-alert-notifications.html">ADR 0011: Opt-in webhook alert notifications, SMTP deferred</a></li>
+<li><a href="0013-alert-suppression-rules.html" aria-current="page">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</a></li>
+<li><a href="0015-telegram-and-smtp-receivers.html">ADR 0015: Telegram and SMTP notification receivers</a></li>
+</ul>
+<h2 class="nav-h">Observed attack patterns</h2><ul>
+<li><a href="../attack-patterns/2026-10-08-observed-ssh-loader-and-worm.html">Observed (2026-10-08): Go SSH loader probe, SSH worm, SFTP &quot;sshd&quot; upload</a></li>
+<li><a href="../attack-patterns/readme.html">Attack Patterns</a></li>
+</ul>
+<h2 class="nav-h">Reports</h2><ul>
+<li><a href="../reports/2026-10-08-critical-alerts-triage.html">Report: Triage of the 13 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-10-open-alerts-triage.html">Report: Triage of the 62 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-11-open-alerts-triage.html">Report: Triage of the 14 open alerts (2026-10-11)</a></li>
+<li><a href="../reports/2026-10-15-open-alerts-triage.html">Report: Triage of the 18 open alerts (2026-10-15)</a></li>
+</ul>
+<h2 class="nav-h">Research</h2><ul>
+<li><a href="../research/research-plan.html">Research Plan - honeypot-intelligence</a></li>
+<li><a href="../research/enrichment-providers-2026-10-16.html">Enrichment providers research (0.6.0)</a></li>
+<li><a href="../research/honeypot-comparison.html">Honeypot Technology Comparison - Research</a></li>
+</ul>
+</details></nav>
+<main id="main">
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../index.html">Home</a></li><li>Architecture decisions</li><li aria-current="page">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</li></ol></nav>
+<article lang="en">
+<header class="page-head">
+<p class="kicker" lang="en">Architecture decisions</p>
+<h1 id="adr-0013-alert-suppression-rules-demote-or-suppress-alerts-are-never-deleted">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</h1>
+<p class="meta" lang="en"><span class="source">source: <code lang="en">docs/decisions/0013-alert-suppression-rules.md</code></span></p>
+</header>
+
+<div class="prose">
+
+<p>Status: accepted (2026-10-15). Implementation: IMPLEMENTED in 0.5.0 (unreleased); covered by automated
+tests; NOT VALIDATED on a VM or production yet.</p>
+<p>Context: known harmless probes (for example the Group B loader capability probe, command hash <code>d882d096...</code>)
+raise one <code>medium</code> alert per source IP per day and bury real alerts. Detection and classification are correct
+and must keep running; only the alert noise is wrong. Hiding alerts is also a risk: a rule that is too broad
+can hide a real attack.</p>
+<p>Decision:</p>
+<ol>
+<li>One choke point. Every alert (<code>new_payload</code>, detection, disk usage) is created through <code>store._alert</code>,
+   which asks <code>suppression.Suppressor</code> for a decision. Matching lives in <code>backend/hpintel/suppression.py</code>.</li>
+<li>Matchers are optional and ANDed; a rule needs at least one (enforced by the API):
+   <code>command_hash</code> (exact, 64 hex), <code>kind</code> (exact, or prefix when it ends with <code>*</code>), <code>src_ip</code>, <code>src_cidr</code>
+   (IPv4 and IPv6), <code>src_asn</code> (from <code>ip_intelligence.asn</code>; an IP that is not enriched yet never matches),
+   <code>require_no_transfer</code> (no captured payload transfer in the session, <code>store.payload_transferred</code>) and
+   <code>expires_at</code> (exclusive; checked with an injectable clock; the API requires a future value on create and
+   when the value changes on update, so an already expired rule can still be edited or disabled). Disabled and expired rules never match.</li>
+<li>Actions:
+   - <code>demote</code> with <code>target_severity</code>: the alert is created at that severity; <code>alerts.original_severity</code> and
+     <code>alerts.suppression_rule_id</code> record the change. A demote rule whose target is not lower than the alert
+     severity is skipped (a rule never raises a severity).
+   - <code>suppress</code>: no <code>alerts</code> row is created. One row goes to <code>suppressed_alerts</code> (unique <code>dedup_key</code>), so
+     repeated detection runs of the same session count once. Nothing is published to <code>/ws</code> or sent by the
+     webhook notifier, because the notifier only reads <code>alerts</code>.</li>
+<li>Order: among all matching rules a <code>suppress</code> rule beats a <code>demote</code> rule; inside one action the lowest rule
+   id wins. A rule's <code>hit_count</code> and <code>last_hit_at</code> change once per new alert or suppressed row (dedup
+   repeats do not count).</li>
+<li>Hash timing, both directions. <code>sessions.command_hash</code> is only filled for closed sessions by
+   <code>analytics_jobs.fill_command_hashes</code>. A <code>command_hash</code> matcher is never evaluated against the commands of
+   an open session: an attacker may send a known probe sequence first and continue, so a matching prefix
+   must not hide or demote the alert (the alert is raised normally). At raise time a <code>command_hash</code> rule can
+   only match a session that is already <code>closed</code> and whose stored hash is current
+   (<code>command_hash_count = command_count</code>); a missing or stale hash never matches. Such a closed session can
+   be suppressed or demoted at raise time. For alerts raised before the hash existed, a bounded, idempotent
+   housekeeping pass (<code>suppression.reevaluate</code>: alerts of the last 7 days, newest first in pages of 500
+   alerts, at most 10 pages per run, only alerts with no <code>original_severity</code> and no <code>suppression_rule_id</code>,
+   only closed sessions with a current stored hash) applies <code>demote</code> rules with a <code>command_hash</code>. It never
+   applies <code>suppress</code> rules, so a re-evaluated alert is lowered, never hidden.
+   Consequence: alerts are normally raised while the session is still open, before the hash is stored,
+   so a <code>suppress</code> rule whose only distinguishing matcher is <code>command_hash</code> rarely or never fires. Use
+   <code>demote</code> for command-hash rules (the seed rule does).
+   Dedup keys: a suppressed or demoted first alert occupies its dedup key. For command-level-only
+   classification alerts (no payload transfer) the key is <code>class-ip:&lt;category&gt;:&lt;src_ip&gt;:&lt;UTC day&gt;</code>, so
+   later such sessions of the same IP, category and day are not raised again, neither as an alert nor as a
+   <code>suppressed_alerts</code> row. A session with a captured transfer uses its own per-session key
+   <code>class:&lt;session&gt;:&lt;category&gt;</code> and is decided on its own.
+   Critical alerts are never suppressed: <code>decide</code> skips <code>suppress</code> rules for them, so they fall to a matching
+   <code>demote</code> rule or are raised as they are (for example a critical <code>disk_usage</code> alert; a <code>high</code> one can be
+   suppressed). The API also rejects a <code>suppress</code> rule whose only matcher is <code>require_no_transfer</code>
+   (a <code>suppress</code> rule needs <code>command_hash</code>, <code>kind</code>, <code>src_ip</code>, <code>src_cidr</code> or <code>src_asn</code>).</li>
+<li>Alerts are never deleted by this feature (owner decision). Events, sessions, commands, classifications and
+   MITRE techniques are never touched; suppression only affects the alert row.</li>
+<li>History. <code>suppressed_alerts</code> has no foreign key to the rule, so deleting a rule (hard delete, admin only)
+   keeps the log; <code>alerts.suppression_rule_id</code> also stays. <code>suppressed_alerts</code> follows the events/alerts
+   retention; rules are never swept. At most 200 rules.</li>
+<li>Rules are cached for 30 s in the process and the cache is invalidated on create, update and delete.
+   A generation counter ensures a load that started before an invalidation is not cached. Changes made
+   directly in the database take up to 30 s to apply.</li>
+<li>Seed rule (migration 12, idempotent by name <code>known-probe-filter-d882d096</code>): command hash
+   <code>d882d0964774607b8db753f534966863550f4b5a4b10d2b0bc2bfe8ef4bc5404</code>, kind
+   <code>classification:malware_deployment*</code>, <code>require_no_transfer</code>, demote to <code>low</code>. The same hash with a
+   transfer is not demoted.</li>
+<li>Rule CRUD is logged at INFO with the actor and rule id only, never the name or note.</li>
+</ol>
+<p>Consequences: a mistaken or overly broad rule hides alerts from the dashboard, the WebSocket and the webhook
+until it is edited or deleted; the <code>Suppressed alerts</code> tab and <code>suppressed_alerts</code> show what was hidden.
+Operators should prefer <code>demote</code> over <code>suppress</code> and add an expiry to temporary rules (OPERATIONS.md).</p>
+</div>
+</article>
+<nav class="pager" aria-label="Previous and next">
+<a class="prev" href="0011-webhook-alert-notifications.html"><span>Previous</span>ADR 0011: Opt-in webhook alert notifications, SMTP deferred</a>
+<a class="next" href="0015-telegram-and-smtp-receivers.html"><span>Next</span>ADR 0015: Telegram and SMTP notification receivers</a>
+</nav>
+</main>
+<aside class="side-toc"></aside>
+</div>
+<footer class="site-foot"><p>Honeypot Intelligence - generated from the project documents and a statistics snapshot. Data snapshot: 2026-10-21. Source commit: <code>960b5b6</code>. Defensive research; attacker indicators defanged; <a href="../pages/about.html">how this site is published</a>.</p></footer>
+<script src="../assets/library.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Containment - Honeypot Intelligence</title>
+<meta name="description" content="How default-deny egress, uid-based rules and a watchdog keep the honeypot from harming anyone, with validated evidence.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/pages/containment.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/pages/containment.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/library/tr/pages/containment.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/pages/containment.html">
+<link rel="stylesheet" href="../assets/library.css">
+<script>try{var t=localStorage.getItem("hpkb-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body class="page-page" data-root="../" data-assets="../" data-lang="en" data-i18n="{&quot;search_all&quot;:&quot;All results for&quot;,&quot;search_none&quot;:&quot;No results.&quot;,&quot;search_results_for&quot;:&quot;result(s) for&quot;}">
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+<a class="brand" href="../index.html"><svg class="logo" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="11" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 13.6V17" stroke="currentColor" stroke-width="1.4"/></svg><span>Honeypot <em>Intelligence</em></span></a>
+<form class="search" action="../search.html" role="search"><label for="q" class="vh">Search the site</label><input id="q" name="q" type="search" placeholder="Search the site" autocomplete="off" aria-controls="search-pop"><div id="search-pop" class="search-pop" hidden></div></form>
+<nav class="lang" aria-label="Language"><a href="containment.html" hreflang="en" lang="en" aria-current="true">EN</a><a href="../tr/pages/containment.html" hreflang="tr" lang="tr">TR</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch between light and dark theme" title="Switch between light and dark theme"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site contents"><details open><summary>Site contents</summary>
+<ul class="nav-top"><li><a href="../index.html">Home</a></li><li><a href="../search.html">Search</a></li></ul>
+<h2 class="nav-h">Start</h2><ul>
+<li><a href="overview.html">Overview</a></li>
+</ul>
+<h2 class="nav-h">Platform</h2><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="containment.html" aria-current="page">Containment</a></li>
+<li><a href="intelligence-pipeline.html">Intelligence pipeline</a></li>
+</ul>
+<h2 class="nav-h">Findings</h2><ul>
+<li><a href="attack-landscape.html">Attack landscape</a></li>
+<li><a href="campaigns.html">Campaigns</a></li>
+<li><a href="indicators.html">Indicators</a></li>
+</ul>
+<h2 class="nav-h">Project</h2><ul>
+<li><a href="operations-history.html">Operations history</a></li>
+<li><a href="decisions.html">Decisions</a></li>
+<li><a href="research.html">Research</a></li>
+<li><a href="glossary.html">Glossary</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+<h2 class="nav-h">Documents</h2><ul>
+<li class="nav-shelf">Core documents</li>
+<li><a href="../volumes/readme.html">Honeypot Intelligence Platform</a></li>
+<li><a href="../volumes/architecture.html">Architecture</a></li>
+<li><a href="../volumes/threat-model.html">Threat Model</a></li>
+<li><a href="../volumes/data-model.html">Data Model</a></li>
+<li><a href="../volumes/api.html">API</a></li>
+<li class="nav-shelf">Requirements and validation</li>
+<li><a href="../volumes/requirements.html">Requirements Document - honeypot-intelligence</a></li>
+<li><a href="../volumes/assumptions.html">Assumptions</a></li>
+</ul>
+<h2 class="nav-h">Architecture decisions</h2><ul>
+<li><a href="../decisions/readme.html">Architecture Decision Records</a></li>
+<li><a href="../decisions/0001-cowrie-as-honeypot.html">ADR 0001: Cowrie as the SSH honeypot</a></li>
+<li><a href="../decisions/0002-direct-port-22-binding.html">ADR 0002: Cowrie binds tcp/22 directly with CAP_NET_BIND_SERVICE</a></li>
+<li><a href="../decisions/0003-containment-by-uid.html">ADR 0003: Containment by uid, no honeypot egress at all</a></li>
+<li><a href="../decisions/0004-sqlite-portable-schema.html">ADR 0004: SQLite now, PostgreSQL-compatible schema</a></li>
+<li><a href="../decisions/0005-fastapi-websocket-react.html">ADR 0005: FastAPI + WebSocket backend, React dashboard served by the backend</a></li>
+<li><a href="../decisions/0006-offline-release.html">ADR 0006: Offline release tarball with a wheelhouse</a></li>
+<li><a href="../decisions/0007-ip-intelligence-sources.html">ADR 0007: IP intelligence from DNS-based sources</a></li>
+<li><a href="../decisions/0008-evidence-confidence-model.html">ADR 0008: Evidence and confidence model</a></li>
+<li><a href="../decisions/0010-keep-all-logs-for-research.html">ADR 0010: Keep all captured logs for research (effectively unlimited retention)</a></li>
+<li><a href="../decisions/0011-webhook-alert-notifications.html">ADR 0011: Opt-in webhook alert notifications, SMTP deferred</a></li>
+<li><a href="../decisions/0013-alert-suppression-rules.html">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</a></li>
+<li><a href="../decisions/0015-telegram-and-smtp-receivers.html">ADR 0015: Telegram and SMTP notification receivers</a></li>
+</ul>
+<h2 class="nav-h">Observed attack patterns</h2><ul>
+<li><a href="../attack-patterns/2026-10-08-observed-ssh-loader-and-worm.html">Observed (2026-10-08): Go SSH loader probe, SSH worm, SFTP &quot;sshd&quot; upload</a></li>
+<li><a href="../attack-patterns/readme.html">Attack Patterns</a></li>
+</ul>
+<h2 class="nav-h">Reports</h2><ul>
+<li><a href="../reports/2026-10-08-critical-alerts-triage.html">Report: Triage of the 13 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-10-open-alerts-triage.html">Report: Triage of the 62 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-11-open-alerts-triage.html">Report: Triage of the 14 open alerts (2026-10-11)</a></li>
+<li><a href="../reports/2026-10-15-open-alerts-triage.html">Report: Triage of the 18 open alerts (2026-10-15)</a></li>
+</ul>
+<h2 class="nav-h">Research</h2><ul>
+<li><a href="../research/research-plan.html">Research Plan - honeypot-intelligence</a></li>
+<li><a href="../research/enrichment-providers-2026-10-16.html">Enrichment providers research (0.6.0)</a></li>
+<li><a href="../research/honeypot-comparison.html">Honeypot Technology Comparison - Research</a></li>
+</ul>
+</details></nav>
+<main id="main">
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../index.html">Home</a></li><li>Platform</li><li aria-current="page">Containment</li></ol></nav>
+<article>
+<header class="page-head">
+<p class="kicker">Platform</p>
+<h1>Containment</h1>
+<p class="lede">How default-deny egress, uid-based rules and a watchdog keep the honeypot from harming anyone, with validated evidence.</p>
+<p class="meta"><span>5 sections</span></p>
+</header>
+<details class="toc-mobile"><summary>On this page</summary><nav class="toc" aria-label="On this page"><h2>On this page</h2><ul><li class="l2"><a href="#controls">Controls</a></li><li class="l2"><a href="#live-containment-counters">Live containment counters</a></li><li class="l2"><a href="#validated-evidence">Validated evidence</a></li><li class="l2"><a href="#availability">Availability</a></li><li class="l2"><a href="#residual-risks">Residual risks</a></li></ul></nav></details>
+<div class="prose">
+<p>Principle: <strong>realism never overrides containment.</strong> A compromised or abused honeypot must not scan, attack, relay
+or send spam to third parties, and must not reach the management plane. Sources: the
+<a href="../volumes/threat-model.html">threat model</a> and the project's penetration test (not published).</p>
+<h2 id="controls">Controls <a class="anchor" href="#controls" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Control</th>
+<th>What it does</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default-deny egress</td>
+<td>The nftables output policy is drop; the forward policy is drop; <code>ip_forward</code> is 0.</td>
+<td><a href="../decisions/0003-containment-by-uid.html">ADR 0003</a></td>
+</tr>
+<tr>
+<td>Containment by user id</td>
+<td>Every new connection from the honeypot user is dropped, including loopback, before any accept rule. Attacker downloads therefore fail by design and are recorded as failed attempts and network intents.</td>
+<td>ADR 0003</td>
+</tr>
+<tr>
+<td>No tunnels</td>
+<td>SSH forwarding is disabled in Cowrie; direct-tcpip channels are refused.</td>
+<td>Penetration test</td>
+</tr>
+<tr>
+<td>Unprivileged services</td>
+<td>Cowrie holds only the capability to bind tcp/22; the backend holds no capability at all. systemd hardening is applied to every unit.</td>
+<td><a href="../decisions/0002-direct-port-22-binding.html">ADR 0002</a></td>
+</tr>
+<tr>
+<td>Narrow opt-in egress</td>
+<td>Alert channels and (planned) reputation lookups each need their own explicit rule for the backend user: one address and port, never the honeypot user. Without the keys the ruleset is byte-identical to the default.</td>
+<td>ADRs 0011, 0015, 0018</td>
+</tr>
+<tr>
+<td>Availability watchdog</td>
+<td>A watchdog restarts the honeypot if it stops responding.</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>Management plane</td>
+<td>Management access is restricted; the dashboard listens on loopback only and is reached through an authenticated tunnel.</td>
+<td>Architecture</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="live-containment-counters">Live containment counters <a class="anchor" href="#live-containment-counters" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Counter</th>
+<th>Value (snapshot 2026-10-21)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Packets dropped by the egress policy</td>
+<td>28</td>
+</tr>
+<tr>
+<td>Cowrie restarts</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<p>The egress counter also includes harmless traffic from other host processes that the default-deny policy blocks.
+The 2026-10-15 triage report separates the counters: the dedicated honeypot-user counter stayed at 6 packets,
+unchanged since 2026-10-11 (MEASURED); the larger
+counter was explained by scheduled system jobs of the host being denied.</p>
+<h2 id="validated-evidence">Validated evidence <a class="anchor" href="#validated-evidence" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Evidence</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No jail breakout, no relay or proxy to third parties, no reach to the management plane, no dashboard authentication bypass, no data leak</td>
+<td>Authorized aggressive penetration test on 2026-10-07 against the production release 0.3.0 (black-box attacks plus white-box probes as the honeypot user)</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>TCP, UDP, ICMP, DNS, source-port tricks, raw sockets and loopback from the honeypot user all fail</td>
+<td>Same test; drop counters incremented</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>SSH local, dynamic and remote forwarding through the honeypot are refused with zero outbound packets</td>
+<td>Same test</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>A real worm that tried to spread through the honeypot could not reach any third party</td>
+<td>Group C in <a href="campaigns.html">Campaigns</a>, observed 2026-10-08</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>Containment unchanged by each production upgrade (ruleset hash equal before and after)</td>
+<td>Ruleset hash comparison recorded for every production upgrade 0.3.1 to 0.5.1 (reports not published)</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>Fake-shell writes never reach the real file system; SFTP/SCP uploads land only in a sandboxed, content-addressed directory</td>
+<td>Same test</td>
+<td>VALIDATED</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="availability">Availability <a class="anchor" href="#availability" aria-label="Link to this section">#</a></h2>
+<p>The same test found one availability problem of the honeypot itself; it is not a host compromise and not a
+containment break. Release 0.3.1 added an availability watchdog: a watchdog restarts the honeypot if it stops
+responding (VALIDATED on a disposable test VM, 2026-10-11).</p>
+<h2 id="residual-risks">Residual risks <a class="anchor" href="#residual-risks" aria-label="Link to this section">#</a></h2>
+<p>A skilled attacker can detect that the host is an emulation (accepted risk of medium-interaction honeypots; see
+the threat model and <a href="research.html">Research</a>). Reboot: a reboot of the production host was VALIDATED on 2026-10-10 (18:38 UTC) with release 0.2.x/0.3.0; a
+production reboot with release 0.3.1 and later is NOT RUN. Scenario-based reboots (reboot persistence after install
+and upgrade) were VALIDATED on disposable VMs. IPv6 behaviour is UNKNOWN (the host has no IPv6).</p>
+</div>
+</article>
+<nav class="pager" aria-label="Previous and next">
+<a class="prev" href="architecture.html"><span>Previous</span>Architecture</a>
+<a class="next" href="intelligence-pipeline.html"><span>Next</span>Intelligence pipeline</a>
+</nav>
+</main>
+<aside class="side-toc"><nav class="toc" aria-label="On this page"><h2>On this page</h2><ul><li class="l2"><a href="#controls">Controls</a></li><li class="l2"><a href="#live-containment-counters">Live containment counters</a></li><li class="l2"><a href="#validated-evidence">Validated evidence</a></li><li class="l2"><a href="#availability">Availability</a></li><li class="l2"><a href="#residual-risks">Residual risks</a></li></ul></nav></aside>
+</div>
+<footer class="site-foot"><p>Honeypot Intelligence - generated from the project documents and a statistics snapshot. Data snapshot: 2026-10-21. Source commit: <code>960b5b6</code>. Defensive research; attacker indicators defanged; <a href="about.html">how this site is published</a>.</p></footer>
+<script src="../assets/library.js"></script>
+</body>
+</html>

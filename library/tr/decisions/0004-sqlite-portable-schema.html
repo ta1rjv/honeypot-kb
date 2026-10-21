@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0004: SQLite now, PostgreSQL-compatible schema - Honeypot Intelligence</title>
+<meta name="description" content="SQLAlchemy Core with portable types, ISO UTC timestamps as text, JSON as text, WAL mode, a versioned migration runner (schema_migrations). Deterministic event ids (UUIDv5 of the raw Cowrie line) ma...">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/tr/decisions/0004-sqlite-portable-schema.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/decisions/0004-sqlite-portable-schema.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/library/tr/decisions/0004-sqlite-portable-schema.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/decisions/0004-sqlite-portable-schema.html">
+<link rel="stylesheet" href="../../assets/library.css">
+<script>try{var t=localStorage.getItem("hpkb-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body class="page-document" data-root="../" data-assets="../../" data-lang="tr" data-i18n="{&quot;search_all&quot;:&quot;Tüm sonuçlar:&quot;,&quot;search_none&quot;:&quot;Sonuç yok.&quot;,&quot;search_results_for&quot;:&quot;sonuç, aranan:&quot;}">
+<a class="skip" href="#main">İçeriğe geç</a>
+<header class="topbar">
+<a class="brand" href="../index.html"><svg class="logo" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="11" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 13.6V17" stroke="currentColor" stroke-width="1.4"/></svg><span>Honeypot <em>Intelligence</em></span></a>
+<form class="search" action="../search.html" role="search"><label for="q" class="vh">Sitede ara</label><input id="q" name="q" type="search" placeholder="Sitede ara" autocomplete="off" aria-controls="search-pop"><div id="search-pop" class="search-pop" hidden></div></form>
+<nav class="lang" aria-label="Dil"><a href="../../decisions/0004-sqlite-portable-schema.html" hreflang="en" lang="en">EN</a><a href="0004-sqlite-portable-schema.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+<button class="theme-toggle" type="button" aria-label="Açık ve koyu tema arasında geçiş yap" title="Açık ve koyu tema arasında geçiş yap"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site içeriği"><details open><summary>Site içeriği</summary>
+<ul class="nav-top"><li><a href="../index.html">Ana sayfa</a></li><li><a href="../search.html">Ara</a></li></ul>
+<h2 class="nav-h">Başlangıç</h2><ul>
+<li><a href="../pages/overview.html">Genel bakış</a></li>
+</ul>
+<h2 class="nav-h">Platform</h2><ul>
+<li><a href="../pages/architecture.html">Mimari</a></li>
+<li><a href="../pages/containment.html">Kısıtlama</a></li>
+<li><a href="../pages/intelligence-pipeline.html">İstihbarat hattı</a></li>
+</ul>
+<h2 class="nav-h">Bulgular</h2><ul>
+<li><a href="../pages/attack-landscape.html">Saldırı manzarası</a></li>
+<li><a href="../pages/campaigns.html">Kampanyalar</a></li>
+<li><a href="../pages/indicators.html">Göstergeler</a></li>
+</ul>
+<h2 class="nav-h">Proje</h2><ul>
+<li><a href="../pages/operations-history.html">İşletim geçmişi</a></li>
+<li><a href="../pages/decisions.html">Kararlar</a></li>
+<li><a href="../pages/research.html">Araştırma</a></li>
+<li><a href="../pages/glossary.html">Sözlük</a></li>
+<li><a href="../pages/about.html">Hakkında</a></li>
+</ul>
+<h2 class="nav-h">Belgeler</h2><ul>
+<li class="nav-shelf">Temel belgeler</li>
+<li><a href="../volumes/readme.html">Honeypot Intelligence Platform</a></li>
+<li><a href="../volumes/architecture.html">Architecture</a></li>
+<li><a href="../volumes/threat-model.html">Threat Model</a></li>
+<li><a href="../volumes/data-model.html">Data Model</a></li>
+<li><a href="../volumes/api.html">API</a></li>
+<li class="nav-shelf">Gereksinimler ve doğrulama</li>
+<li><a href="../volumes/requirements.html">Requirements Document - honeypot-intelligence</a></li>
+<li><a href="../volumes/assumptions.html">Assumptions</a></li>
+</ul>
+<h2 class="nav-h">Mimari kararlar</h2><ul>
+<li><a href="readme.html">Architecture Decision Records</a></li>
+<li><a href="0001-cowrie-as-honeypot.html">ADR 0001: Cowrie as the SSH honeypot</a></li>
+<li><a href="0002-direct-port-22-binding.html">ADR 0002: Cowrie binds tcp/22 directly with CAP_NET_BIND_SERVICE</a></li>
+<li><a href="0003-containment-by-uid.html">ADR 0003: Containment by uid, no honeypot egress at all</a></li>
+<li><a href="0004-sqlite-portable-schema.html" aria-current="page">ADR 0004: SQLite now, PostgreSQL-compatible schema</a></li>
+<li><a href="0005-fastapi-websocket-react.html">ADR 0005: FastAPI + WebSocket backend, React dashboard served by the backend</a></li>
+<li><a href="0006-offline-release.html">ADR 0006: Offline release tarball with a wheelhouse</a></li>
+<li><a href="0007-ip-intelligence-sources.html">ADR 0007: IP intelligence from DNS-based sources</a></li>
+<li><a href="0008-evidence-confidence-model.html">ADR 0008: Evidence and confidence model</a></li>
+<li><a href="0010-keep-all-logs-for-research.html">ADR 0010: Keep all captured logs for research (effectively unlimited retention)</a></li>
+<li><a href="0011-webhook-alert-notifications.html">ADR 0011: Opt-in webhook alert notifications, SMTP deferred</a></li>
+<li><a href="0013-alert-suppression-rules.html">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</a></li>
+<li><a href="0015-telegram-and-smtp-receivers.html">ADR 0015: Telegram and SMTP notification receivers</a></li>
+</ul>
+<h2 class="nav-h">Gözlenen saldırı kalıpları</h2><ul>
+<li><a href="../attack-patterns/2026-10-08-observed-ssh-loader-and-worm.html">Observed (2026-10-08): Go SSH loader probe, SSH worm, SFTP &quot;sshd&quot; upload</a></li>
+<li><a href="../attack-patterns/readme.html">Attack Patterns</a></li>
+</ul>
+<h2 class="nav-h">Raporlar</h2><ul>
+<li><a href="../reports/2026-10-08-critical-alerts-triage.html">Report: Triage of the 13 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-10-open-alerts-triage.html">Report: Triage of the 62 open high-severity alerts</a></li>
+<li><a href="../reports/2026-10-11-open-alerts-triage.html">Report: Triage of the 14 open alerts (2026-10-11)</a></li>
+<li><a href="../reports/2026-10-15-open-alerts-triage.html">Report: Triage of the 18 open alerts (2026-10-15)</a></li>
+</ul>
+<h2 class="nav-h">Araştırma</h2><ul>
+<li><a href="../research/research-plan.html">Research Plan - honeypot-intelligence</a></li>
+<li><a href="../research/enrichment-providers-2026-10-16.html">Enrichment providers research (0.6.0)</a></li>
+<li><a href="../research/honeypot-comparison.html">Honeypot Technology Comparison - Research</a></li>
+</ul>
+</details></nav>
+<main id="main">
+<nav class="crumbs" aria-label="Sayfa yolu"><ol><li><a href="../index.html">Ana sayfa</a></li><li>Mimari kararlar</li><li aria-current="page">ADR 0004: SQLite now, PostgreSQL-compatible schema</li></ol></nav>
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<article lang="en">
+<header class="page-head">
+<p class="kicker" lang="tr">Mimari kararlar</p>
+<h1 id="adr-0004-sqlite-now-postgresql-compatible-schema">ADR 0004: SQLite now, PostgreSQL-compatible schema</h1>
+<p class="meta" lang="tr"><span class="source">kaynak: <code lang="en">docs/decisions/0004-sqlite-portable-schema.md</code></span></p>
+</header>
+
+<div class="prose">
+
+<p>Status: accepted (2026-10-06)</p>
+<p>Decision: SQLAlchemy Core with portable types, ISO UTC timestamps as text, JSON
+as text, WAL mode, a versioned migration runner (<code>schema_migrations</code>).
+Deterministic event ids (UUIDv5 of the raw Cowrie line) make ingest idempotent.</p>
+<p>Consequences: single-file database, no extra service; moving to PostgreSQL is a
+<code>HPINTEL_DATABASE_URL</code> change plus driver (not yet tested).</p>
+</div>
+</article>
+<nav class="pager" aria-label="Önceki ve sonraki">
+<a class="prev" href="0003-containment-by-uid.html"><span>Önceki</span>ADR 0003: Containment by uid, no honeypot egress at all</a>
+<a class="next" href="0005-fastapi-websocket-react.html"><span>Sonraki</span>ADR 0005: FastAPI + WebSocket backend, React dashboard served by the backend</a>
+</nav>
+</main>
+<aside class="side-toc"></aside>
+</div>
+<footer class="site-foot"><p>Honeypot Intelligence - proje belgelerinden ve bir istatistik anlık görüntüsünden üretildi. Veri anlık görüntüsü: 2026-10-21. Kaynak commit: <code>960b5b6</code>. Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang); <a href="../pages/about.html">bu site nasıl yayımlanıyor</a>.</p></footer>
+<script src="../../assets/library.js"></script>
+</body>
+</html>
