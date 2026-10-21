@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İşletim Geçmişi - Honeypot Intelligence</title>
+<meta name="description" content="0.2.0&#x27;dan 0.5.1&#x27;e sürüm zaman çizelgesi; üretim yükseltme tarihleri, kesinti süreleri ve kaydedilmiş test sonuçları.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/operations-history.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/operations-history.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/operations-history.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/operations-history.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html" aria-current="page">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../operations-history.html" hreflang="en" lang="en">EN</a> | <a href="operations-history.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>İşletim Geçmişi</h1>
+<p>Platform, kiralık tek bir sanal sunucu üzerinde çalışır. Sürümler önce tek kullanımlık bir test VM'inde
+doğrulanır, sonra korumalı <code>setup.sh</code> yeniden çalıştırmasıyla üretime kurulur; her üretim yükseltmesinin MEASURED
+kanıtlı bir raporu vardır. Ayrıntılı sürüm notları, test günlükleri, raporlar ve işletim kılavuzları özel depoda kalır, yayımlanmaz.</p>
+<h2 id="surum-zaman-cizelgesi">Sürüm zaman çizelgesi</h2>
+<table>
+<thead>
+<tr>
+<th>Sürüm</th>
+<th>Tarih (UTC)</th>
+<th>Öne çıkanlar</th>
+<th>Üretim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.2.0, 0.2.1</td>
+<td>2026-10-07</td>
+<td>İlk arka uç sürümü: Cowrie collector, normalizer, migrasyonlu SQLite store, komut ayrıştırıcı, tespit, REST ve WebSocket API, React paneli.</td>
+<td>LAN referans sitesi</td>
+</tr>
+<tr>
+<td>0.3.0</td>
+<td>2026-10-07</td>
+<td>Tek komutlu kurulum aracı, yalnızca loopback paneli, parola özetine dayalı panel girişi; sürümün sızma testi.</td>
+<td>2026-10-07'de kiralık VDS'e kuruldu</td>
+</tr>
+<tr>
+<td>(panel yükseltmesi)</td>
+<td>2026-10-10</td>
+<td>Analitik, dünya haritası, MITRE matrisi, alarm iş akışı, kampanyalar, payload istihbaratı, IoC dışa aktarımı (migrasyon 4-7).</td>
+<td>2026-10-10'da yayına alındı</td>
+</tr>
+<tr>
+<td>0.3.1</td>
+<td>2026-10-11</td>
+<td>Cowrie erişilebilirlik bekçisi, loopback filtresi, giriş sınırlayıcı, <code>/metrics</code> için JWT.</td>
+<td>2026-10-11 yükseltmesi; Cowrie yaklaşık 1 dk 41 sn, arka uç yaklaşık 24 sn kapalı</td>
+</tr>
+<tr>
+<td>0.4.0</td>
+<td>2026-10-11</td>
+<td>Salt okunur izleyici rolü, analitik görünümler, haftalık rapor, kök durum dışa aktarıcı ve ana makine durumu, isteğe bağlı webhook alarmları.</td>
+<td>2026-10-11 yükseltmesi; Cowrie yaklaşık 16 sn, arka uç yaklaşık 27 sn kapalı</td>
+</tr>
+<tr>
+<td>0.4.1</td>
+<td>2026-10-11</td>
+<td>Denetimden çıkan güvenlik sertleştirme maddeleri.</td>
+<td>2026-10-11 yükseltmesi; Cowrie yaklaşık 2 dk 25 sn kapalı</td>
+</tr>
+<tr>
+<td>0.5.0</td>
+<td>2026-10-16</td>
+<td>Telegram ve e-posta alıcıları, alarm bastırma kuralları, kurulum sihirbazı, MITRE teknik geri doldurma.</td>
+<td>2026-10-16 yükseltmesi; Cowrie banner'ı yaklaşık 15 sn yok</td>
+</tr>
+<tr>
+<td>0.5.1</td>
+<td>2026-10-16</td>
+<td>Veri dışa ve içe aktarma özellikleri.</td>
+<td>2026-10-16 yükseltmesi; Cowrie banner'ı yaklaşık 17 sn yok</td>
+</tr>
+<tr>
+<td>0.6.0 (devam ediyor)</td>
+<td>yayımlanmadı</td>
+<td>Harici itibar zenginleştirme temeli (ADR 0018).</td>
+<td>Dağıtılmadı</td>
+</tr>
+</tbody>
+</table>
+<p>Doğruluk düzeyleri: sürüm içerikleri IMPLEMENTED'dır; listelenen üretim yükseltmeleri kendi raporlarında MEASURED'dır;
+kesinti süreleri servis zaman damgalarından ölçülmüştür.</p>
+<h2 id="uretim-yukseltme-notlar">Üretim yükseltme notları</h2>
+<ul>
+<li>0.3.1: yükseltme ve salt okunur güvenlik denetimi. Dışarıdan yalnızca hedeflenen portlar yanıt verdi; kısıtlama açığı yok.</li>
+<li>0.4.0: 15 kurulum sonrası kontrolün 15'i
+  geçti, veritabanı sayıları düşmedi, güvenlik duvarı dosyası değişmedi, yükseltmeden sonra yeni üçüncü taraf
+  oturumları alındı. Çalıştırılmayanlar: kimlik doğrulamalı API kontrolleri ve üretimde yeniden başlatma.</li>
+<li>0.4.1: denetim bulgularının takibiyle yükseltme, canlı doğrulandı.</li>
+<li>0.5.0: 1 dk 26 sn'de yükseltme, migrasyon
+  11-13, güvenlik duvarı kural kümesi özeti öncesi ve sonrası aynı, satır sayıları düşmedi, başlangıç bastırma kuralı
+  oluşturuldu, MITRE geri doldurma alarm sayısını değiştirmeden tamamlandı.</li>
+<li>0.5.1: 1 dk 26 sn'de yükseltme,
+  migrasyon 14, kural kümesi özeti aynı, hpintel hâlâ capability'siz. Üretimde kimlik doğrulamalı özellik
+  kontrolleri NOT RUN'dır.</li>
+</ul>
+<p>Yeniden başlatma durumu: üretim ana makinesinin yeniden başlatılması 2026-10-10'da (18:38 UTC) 0.2.x/0.3.0 sürümüyle
+VALIDATED'dir. 0.3.1 ve sonrası sürümlerle üretimde yeniden başlatma NOT RUN'dır. Senaryo tabanlı yeniden
+başlatmalar (kurulum ve yükseltme sonrası durum kalıcılığı) tek kullanımlık VM'lerde VALIDATED'dir. Diğer kayıtlı olgular:
+sıfırdan kurulumlar tek kullanımlık bir VM'de doğrulandı (0.3.x); ana makinede IPv6 olmadığından IPv6 hiç test edilmedi.</p>
+<h2 id="kaydedilmis-otomatik-test-sonuclar">Kaydedilmiş otomatik test sonuçları</h2>
+<p>Projenin test günlüğünden (her satır kaydedilmiş bir çalıştırmadır, sonraki sürümler için söz
+değildir):</p>
+<ul>
+<li>0.4.0: 1235 arka uç testi geçti (2026-10-11).</li>
+<li>0.5.0 sürüm adayı (2026-10-16): 1568 arka uç testi geçti, 0 başarısız; 731 dağıtım testi geçti, 3'ü atlandı
+  (isteğe bağlı ortam testleri); panel derlemesi 0 güvenlik açığı raporuyla geçti.</li>
+<li>Test alanları: her olay türünün normalizasyonu, komut ayrıştırıcı, tespit ve güven, payload analizi, API ve
+  WebSocket yetkilendirmesi, güvenlik kontrolleri (enjeksiyon, yol sınırlama, düşmanca girdi), kurulum aracı,
+  güvenlik duvarı üreticisi golden testleri ve kurulum sihirbazı.</li>
+</ul>
+<p>Projede kayıtlı olduğu üzere test edilmeyenler: PostgreSQL arka ucu, temiz bir VM'de Git'ten temiz klon kurulumu,
+üretimde harici bir alıcıya webhook teslimi.</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

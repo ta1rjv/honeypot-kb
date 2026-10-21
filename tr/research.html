@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Araştırma Notları - Honeypot Intelligence</title>
+<meta name="description" content="Projenin kararlarının arkasındaki honeypot teknolojisi karşılaştırması, araştırma planı, honeypot tespit edilebilirliği (yayımlanmamış) ve zenginleştirme sağlayıcıları taraması.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/research.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/research.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/research.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/research.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html" aria-current="page">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../research.html" hreflang="en" lang="en">EN</a> | <a href="research.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Araştırma Notları</h1>
+<p>Tasarımı üç yayımlanmış araştırma belgesi ve yayımlanmamış bir çalışma destekler. Doğruluk düzeyleri kaynakları izler.</p>
+<h2 id="honeypot-teknolojisi-karslastrmas-2026-10-05">Honeypot teknolojisi karşılaştırması (2026-10-05)</h2>
+<p><a href="library/docs/research/honeypot_comparison.html">Tam karşılaştırma</a>. En yüksek ağırlıklı ölçütler SSH odağı, komut
+düzeyinde ve TTY kaydı, özetlemeli dosya yükleme yakalama, yalıtım, kurulum olgunluğu ve yapılandırılmış çıktıydı.
+Sonuç:</p>
+<table>
+<thead>
+<tr>
+<th>Aday</th>
+<th>Karşılaştırmadaki değerlendirme</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cowrie</td>
+<td>Mükemmel uyum: SSH ve Telnet emülasyonu, komut başına JSON günlüğü, yeniden oynatılabilir TTY kayıtları, SFTP/SCP yakalama, ayrıcalıksız çalışır. Seçildi (<a href="library/docs/decisions/0001-cowrie-as-honeypot.html">ADR 0001</a>).</td>
+</tr>
+<tr>
+<td>OpenCanary</td>
+<td>Etkileşimli SSH için zayıf uyum: port izleme, kabuk emülasyonu veya dosya yakalama yok. İsteğe bağlı ikincil.</td>
+</tr>
+<tr>
+<td>Honeytrap</td>
+<td>Genişletilebilir Go çatısı; SSH yalnızca Cowrie entegrasyonuyla. Merkezi yönetim için oldukça iyi, birincil SSH honeypot'u değil. İsteğe bağlı ikincil.</td>
+</tr>
+<tr>
+<td>Dionaea</td>
+<td>Zayıf uyum: başka protokoller üzerinden kötü amaçlı yazılım yakalama, SSH yok. Seçilmedi.</td>
+</tr>
+<tr>
+<td>Conpot</td>
+<td>İlgisiz: endüstriyel kontrol protokolleri. Seçilmedi.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="arastrma-plan">Araştırma planı</h2>
+<p><a href="library/docs/research/RESEARCH_PLAN.html">Araştırma planı</a>: amaç, bir SSH honeypot platformu için teknoloji
+seçimini kesinleştirmekti. Her biri gerekli kanıt ve durma koşuluyla, önceliğe göre sıralı on soru soruldu:
+teknoloji uyumu, Cowrie kurulum gereksinimleri, arka uç paketleri, kısıtlama ve güvenlik, kısıtlayıcı
+güvenlik duvarı, gerçek zamanlı olay hattı, saklama, harici istihbarat kaynakları, panel kimlik doğrulaması
+ve süregelen bakım. Yanıtlar ilk ADR'lere (0001-0008) dönüştü.</p>
+<h2 id="honeypot-tespit-edilebilirligi-2026-10-08">Honeypot tespit edilebilirliği (2026-10-08)</h2>
+<p>Cowrie emülasyonunun tespit edilebilirliğine dair bir çalışma vardır (0.3.1 sürümüne girdi oldu). Yayımlanmamıştır:
+bir makinenin orta etkileşimli emülasyon olduğunun nasıl anlaşılacağı bu herkese açık siteden bilerek uzak tutulur.
+Tek herkese açık ifade, yetenekli bir saldırganın emülasyonu tespit edebileceği yönündeki kabul edilmiş kalan risktir.</p>
+<h2 id="zenginlestirme-saglayclar-2026-10-16">Zenginleştirme sağlayıcıları (2026-10-16)</h2>
+<p><a href="library/docs/research/enrichment-providers-2026-10-16.html">Zenginleştirme sağlayıcıları araştırması</a>, planlanan
+0.6.0 çalışmasını destekler (ADR 0018, bkz.
+<a href="intelligence-pipeline.html">İstihbarat hattı</a>). Beş aday için (AbuseIPDB, GreyNoise Community, Shodan InternetDB,
+URLhaus, VirusTotal v3) resmi sağlayıcı sayfaları 2026-10-16'da okundu: uç noktalar, kimlik doğrulama, ücretsiz
+limitler, karar alanları ve şart notları; her biri VERIFIED, güçlü destekli veya UNKNOWN olarak etiketli. Tek bir DNS
+anlık görüntüsü, birçok sağlayıcının adres kümeleri değişen CDN'lerin veya yük dengeleyicilerin arkasında olduğunu
+gösterdi; bu yüzden tasarım kısa bir adres listesi sabitler ve bir yenileme denetimi sunar; adreslerin günler
+boyunca kararlılığı UNVERIFIED'dır. Not ayrıca YARA araçlarını, paylaşım biçimlerini ve üretim ana makinesinin
+ölçülmüş bir referans değerini kapsar.</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

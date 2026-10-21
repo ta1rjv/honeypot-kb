@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observed Campaigns - Honeypot Intelligence</title>
+<meta name="description" content="Attack families seen on the production honeypot - Go SSH loader probe, SSH worm key drop, SFTP-uploaded Go worm with a miner, and a kaz.sh dropper - with dates and triage verdicts.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/campaigns.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/campaigns.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/campaigns.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/campaigns.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Home</a><a href="overview.html">Overview</a><a href="architecture.html">Architecture</a><a href="containment.html">Containment</a><a href="attack-landscape.html">Attack landscape</a><a href="campaigns.html" aria-current="page">Campaigns</a><a href="indicators.html">Indicators</a><a href="intelligence-pipeline.html">Intelligence pipeline</a><a href="operations-history.html">Operations history</a><a href="decisions.html">Decisions</a><a href="research.html">Research</a><a href="glossary.html">Glossary</a><a href="about.html">About</a><a href="library/index.html">Library</a></nav>
+<nav class="lang" aria-label="Language"><a href="campaigns.html" hreflang="en" lang="en" aria-current="true">EN</a> | <a href="tr/campaigns.html" hreflang="tr" lang="tr">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Observed Campaigns</h1>
+<p>These groups come from the analyst triage reports of the first two weeks of production traffic
+(<a href="library/docs/reports/2026-10-08-critical-alerts-triage.html">2026-10-08</a>,
+<a href="library/docs/reports/2026-10-10-open-alerts-triage.html">2026-10-10</a>,
+<a href="library/docs/reports/2026-10-11-open-alerts-triage.html">2026-10-11</a>,
+<a href="library/docs/reports/2026-10-15-open-alerts-triage.html">2026-10-15</a>) and the
+<a href="library/docs/attack-patterns/2026-10-08-observed-ssh-loader-and-worm.html">attack pattern note</a>. The evidence
+level of all triage data is MEASURED (read-only inspection of the live database). No captured file was executed;
+analysis of binaries is static and string-based. Source addresses are not repeated here; use the
+<a href="indicators.html">indicator tables</a>.</p>
+<h2 id="summary">Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Name</th>
+<th>First seen (UTC)</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>Go SSH loader capability probe</td>
+<td>2026-10-07</td>
+<td>Real, contained; harmless pre-flight check, no second stage seen</td>
+</tr>
+<tr>
+<td>C</td>
+<td>SSH worm key and config drop</td>
+<td>2026-10-08</td>
+<td>Real, contained; highest intelligence value; spread blocked</td>
+</tr>
+<tr>
+<td>D</td>
+<td>SFTP upload named <code>sshd</code> (Go SSH worm with miner config)</td>
+<td>2026-10-08</td>
+<td>Real, contained; truncated copies captured</td>
+</tr>
+<tr>
+<td>E</td>
+<td><code>kaz.sh</code> download-and-run dropper</td>
+<td>2026-10-13</td>
+<td>Real, contained; script never fetched, content unknown</td>
+</tr>
+</tbody>
+</table>
+<h2 id="group-b-go-ssh-loader-capability-probe">Group B - Go SSH loader capability probe</h2>
+<p>A client announcing <code>SSH-2.0-Go</code> logs in as root with common passwords and runs one fixed sequence: set <code>PATH</code>,
+profile the system with <code>uname</code>, then write a tiny script that echoes a marker, make it executable, run it and
+delete it. It is a pre-flight check for a loader, not malware; the real second stage would only be fetched if the
+probe succeeds, and it never was. The command sequence is byte-identical across sessions (a single command hash).</p>
+<ul>
+<li>Maps to reconnaissance and a download/execute pattern; MITRE T1082, T1222.002, T1059.004.</li>
+<li>Seen from many addresses of a few hosting networks; by 2026-10-11 the probe hash appeared in 87 sessions from
+  11 addresses of one ASN between 2026-10-07 and 2026-10-11 (MEASURED).</li>
+<li>Detection overfired: at severity <code>high</code> with per-session de-duplication this single probe generated about 90 %
+  of the open alerts on 2026-10-10. The response was tuning (severity <code>medium</code>, de-duplication per address and
+  day, 2026-10-10) and later a seed suppression rule that demotes the known probe to <code>low</code> (0.5.0).</li>
+</ul>
+<h2 id="group-c-ssh-propagation-worm-key-and-config-drop">Group C - SSH propagation worm, key and config drop</h2>
+<p>A <code>SSH-2.0-Go</code> client logged in with a default credential pair and staged two files: a permissive SSH client
+configuration (host-key checking off) and an SSH private key. This is the classic pattern of dota/outlaw-family
+SSH worms: the dropped key and configuration let a compromised host reach further targets non-interactively.
+MITRE T1105, T1098.004, T1021.004. The same source returned four more times (2026-10-08 to 2026-10-10) with the
+same one-line key drop. <strong>The honeypot's default-deny egress prevented any onward spread</strong>, which is the
+clearest real-world confirmation of the containment design. The key content is deliberately not reproduced.</p>
+<h2 id="group-d-sftp-upload-named-sshd-go-ssh-worm-with-miner-configuration">Group D - SFTP upload named <code>sshd</code> (Go SSH worm with miner configuration)</h2>
+<p>Several sources in China, India and elsewhere brute-forced a login, uploaded a file named <code>sshd</code> over SFTP and
+often ran no command at all (one ran <code>chmod +x</code> and <code>nohup</code>, which only executed inside the emulation).
+Triage of 2026-10-10 and 2026-10-15 found:</p>
+<ul>
+<li>All captured copies, across hashes, are byte prefixes of <strong>one</strong> binary; the different SHA256 values are an
+  artifact of truncation (upload cap of 20 MiB, or the session dropping). The longest copy so far is about 30 MB.</li>
+<li>ELF 64-bit x86-64, a Go program; string indicators include an attack queue of credentials, an SFTP library, a
+  PAM library reference, system-information libraries, a mining configuration structure (algorithm, pool
+  address, pool user and password, NiceHash flag), public-IP lookup services and a chat-service webhook for
+  reporting. Assessment: a self-spreading SSH brute-force bot carrying a cryptominer configuration.
+  Confidence MEDIUM (string-based, never executed); pool address and wallet were not found in the captured
+  prefix; family name UNKNOWN (no hash lookup done).</li>
+<li>MITRE T1105, persistence (T1543 candidate).</li>
+<li>Two collection gaps were found and recorded: uploads were not marked as available by the collector, and the
+  upload size limit truncates samples larger than 20 MiB.</li>
+</ul>
+<h2 id="group-e-kazsh-download-and-run-dropper">Group E - <code>kaz.sh</code> download-and-run dropper</h2>
+<p>On 2026-10-13 around 11:27 UTC, one address in a Baltic-registered hosting ASN opened three sessions within ten
+seconds, each a root login with a different weak password (credential spraying), each sending a single command
+chain: <code>uname -a</code>, <code>cat /etc/os-release</code>, then a <code>curl</code> fetch of a script named <code>kaz.sh</code> from
+<code>hxxp://74[.]113[.]234[.]62:5521/akzmahazcA/kaz.sh</code> piped to <code>bash</code>, with <code>wget</code> and a <code>kz.sh</code> variant as
+fallback. The fetch was never made: the network intents are derived from the command text, there is no payload
+event and the honeypot egress counter did not change. The script content is therefore unknown, and no other
+source used this URL (MEASURED).</p>
+<p>Understanding what such links deliver is the motivation for the proposed out-of-band retrieval design,
+ADR 0014, which is deferred and
+has no code (PROPOSED).</p>
+<h2 id="simulated-patterns">Simulated patterns</h2>
+<p>The platform also recognizes patterns reproduced in a lab with documentation addresses on
+2026-10-07 (credential guessing, host reconnaissance, download-and-execute chains, cron and SSH-key persistence,
+trace removal, credential-file access, miners). Those are marked "Simulated", not observed, in the
+<a href="library/docs/attack-patterns/README.html">attack pattern catalogue</a>.</p>
+</main>
+<footer>Data snapshot: 2026-10-21 | Source commit: bceebd0 | Defensive research; attacker indicators defanged</footer>
+</body>
+</html>

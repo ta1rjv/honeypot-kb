@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bu Site Hakkında - Honeypot Intelligence</title>
+<meta name="description" content="Amaç, veri politikası, temizleme ve defanging kuralları, doğruluk düzeyleri, lisans ve özel kaynak deposu.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/about.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/about.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/about.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/about.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html" aria-current="page">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../about.html" hreflang="en" lang="en">EN</a> | <a href="about.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Bu Site Hakkında</h1>
+<h2 id="amac">Amaç</h2>
+<p>Bu site, Honeypot Intelligence projesinin öğrendiklerini yayımlar: kontrol altında bir SSH honeypot'unun nasıl
+kurulduğunu, saldırganların ona karşı ne yaptığını ve hangi mühendislik kararlarının alındığını. Savunmacılar,
+araştırmacılar ve benzer sistemlerin işletmecileri için yazılmıştır. Bu <strong>savunma amaçlı bir araştırmadır</strong>; bu
+honeypot'a saldırmak veya onun parmak izini çıkarmak için hiçbir talimat içermez.</p>
+<h2 id="veri-politikas">Veri politikası</h2>
+<ul>
+<li><strong>Tüm günlükleri araştırma için sakla.</strong> Yakalanan tüm veriler (olaylar, oturumlar, payload'lar, ham günlükler,
+  TTY kayıtları) üretim ana makinesinde fiilen sonsuza dek saklanır; böylece eski oturumlar otomatik temizlikte
+  kaybolmaz (<a href="library/docs/decisions/0010-keep-all-logs-for-research.html">ADR 0010</a>). Disk kullanım alarmları açık
+  kalır ve kapasite işletmecinin sorumluluğundadır.</li>
+<li><strong>Anlık görüntüden gelen sayılar.</strong> İstatistik sayfalarındaki her sayı, tablo ve grafik bir üretim anlık
+  görüntüsünden üretilir (tarih o sayfalarda gösterilir). Hiçbir sayı elle yazılmaz.</li>
+<li><strong>Saldırgan verisi saldırgan tarafından sağlanır.</strong> Kullanıcı adları, parolalar, komutlar ve istemci dizgileri
+  düşman kaynaklardan gelir. Veri olarak gösterilir, asla güvenilir içerik olarak değil.</li>
+<li><strong>Önce kısıtlama.</strong> Yakalanan dosyalar yalnızca okunur, asla çalıştırılmaz veya yayımlanmaz.</li>
+</ul>
+<h2 id="temizleme-ve-defanging-politikas">Temizleme ve defanging politikası</h2>
+<ul>
+<li>Üretim ana makinesinin adresi, özel adresler, yönetim portları, tünel ve ana makine adları, sanallaştırma
+  tanımlayıcıları, operatör hesap adları, e-posta adresleri, anahtarlar, sırlar ve parola özetleri asla yayımlanmaz.
+  Genel ifadelerle anlatılırlar (örneğin "kiralık bir sanal sunucu", "kısıtlanmış bir yönetim
+  erişimi", "tek kullanımlık bir test VM'i").</li>
+<li>Saldırgan göstergeleri (kaynak IP'ler, kimlik bilgileri, payload özetleri, URL'ler, alan adları) anlık görüntü
+  tablolarından gelmek üzere görünebilir; metinde alıntılanan her URL veya alan adı etkisizleştirilir (defanged).</li>
+<li>Özel anahtar materyali ve yakalanan ikili dosyalar asla yeniden üretilmez.</li>
+<li>Bir yayın kapısı (publication gate), üretilen sayfalarda yasaklı örüntüleri denetler ve eşleşmede derlemeyi
+  başarısız kılar.</li>
+<li>Bu honeypot'un nasıl tespit edileceğine dair ayrıntılar bilerek yalnızca üst düzeyde özetlenir.</li>
+</ul>
+<h2 id="dogruluk-duzeyleri">Doğruluk düzeyleri</h2>
+<p>Sistem hakkındaki ifadeler şu düzeylerden birini taşır ve kanıt olmadan asla yükseltilmez:</p>
+<table>
+<thead>
+<tr>
+<th>Düzey</th>
+<th>Anlamı</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLANNED</td>
+<td>Tasarlandı veya önerildi, yapılmadı.</td>
+</tr>
+<tr>
+<td>IMPLEMENTED</td>
+<td>Kod var; en fazla birim testleriyle sınandı.</td>
+</tr>
+<tr>
+<td>REVIEWED</td>
+<td>Bir kod incelemesi onayladı.</td>
+</tr>
+<tr>
+<td>VALIDATED</td>
+<td>Gerçek (genellikle tek kullanımlık) bir ortamda kaydedilmiş sonuçlarla denendi.</td>
+</tr>
+<tr>
+<td>MEASURED</td>
+<td>Üretim sisteminde kayıtlı çıktıyla gözlendi.</td>
+</tr>
+<tr>
+<td>UNKNOWN</td>
+<td>Hiçbir kaynakta ortaya konmadı.</td>
+</tr>
+</tbody>
+</table>
+<p>Çalıştırılmayan maddeler NOT RUN veya NOT VERIFIED olarak adlandırılır ve geçmiş gibi raporlanmaz.</p>
+<h2 id="lisans-ve-garanti">Lisans ve garanti</h2>
+<p>Kaynak deposu özeldir ve açık kaynak bir lisans seçilmemiştir; tüm haklar depo sahibine aittir. Site içeriği yalnızca
+bilgilendirme amacıyla, <strong>hiçbir garanti olmaksızın</strong> sunulur. Göstergeler yanlış, eski olabilir veya paylaşılan
+altyapıyı yansıtabilir; bir şeyi engellemeden önce doğrulayın. Kütüphanede yansıtılan kaynak belgeler yetkili
+İngilizce metindir.</p>
+<h2 id="kaynaklar">Kaynaklar</h2>
+<p>Derlenmiş sayfalar proje belgelerine dayanır: <a href="library/README.html">README</a>,
+<a href="library/ARCHITECTURE.html">ARCHITECTURE</a>, <a href="library/THREAT_MODEL.html">THREAT_MODEL</a>,
+<a href="library/DATA_MODEL.html">DATA_MODEL</a>,
+<a href="library/API.html">API</a>, <a href="library/docs/REQUIREMENTS.html">gereksinimler</a>,
+karar kayıtları, saldırı örüntüleri, triyaj raporları ve araştırma notları. Kurulumun işletim belgeleri
+(kılavuzlar, ağ ve güvenlik yapılandırması, sürüm notları, üretim raporları) yayımlanmaz. <a href="index.html">Ana sayfadan</a> başlayın.</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted) - Honeypot Intelligence</title>
+<meta name="description" content="docs/decisions/0013-alert-suppression-rules.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/decisions/0013-alert-suppression-rules.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0013-alert-suppression-rules.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Ana sayfa</a><a href="../../../overview.html">Genel bakış</a><a href="../../../architecture.html">Mimari</a><a href="../../../containment.html">Kısıtlama</a><a href="../../../attack-landscape.html">Saldırı manzarası</a><a href="../../../campaigns.html">Kampanyalar</a><a href="../../../indicators.html">Göstergeler</a><a href="../../../intelligence-pipeline.html">İstihbarat hattı</a><a href="../../../operations-history.html">İşletim geçmişi</a><a href="../../../decisions.html">Kararlar</a><a href="../../../research.html">Araştırma</a><a href="../../../glossary.html">Sözlük</a><a href="../../../about.html">Hakkında</a><a href="../../index.html" aria-current="page">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../../../../library/docs/decisions/0013-alert-suppression-rules.html" hreflang="en" lang="en">EN</a> | <a href="0013-alert-suppression-rules.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<div lang="en">
+<h1 id="adr-0013-alert-suppression-rules-demote-or-suppress-alerts-are-never-deleted">ADR 0013: Alert suppression rules (demote or suppress, alerts are never deleted)</h1>
+<p>Status: accepted (2026-10-15). Implementation: IMPLEMENTED in 0.5.0 (unreleased); covered by automated
+tests; NOT VALIDATED on a VM or production yet.</p>
+<p>Context: known harmless probes (for example the Group B loader capability probe, command hash <code>d882d096...</code>)
+raise one <code>medium</code> alert per source IP per day and bury real alerts. Detection and classification are correct
+and must keep running; only the alert noise is wrong. Hiding alerts is also a risk: a rule that is too broad
+can hide a real attack.</p>
+<p>Decision:</p>
+<ol>
+<li>One choke point. Every alert (<code>new_payload</code>, detection, disk usage) is created through <code>store._alert</code>,
+   which asks <code>suppression.Suppressor</code> for a decision. Matching lives in <code>backend/hpintel/suppression.py</code>.</li>
+<li>Matchers are optional and ANDed; a rule needs at least one (enforced by the API):
+   <code>command_hash</code> (exact, 64 hex), <code>kind</code> (exact, or prefix when it ends with <code>*</code>), <code>src_ip</code>, <code>src_cidr</code>
+   (IPv4 and IPv6), <code>src_asn</code> (from <code>ip_intelligence.asn</code>; an IP that is not enriched yet never matches),
+   <code>require_no_transfer</code> (no captured payload transfer in the session, <code>store.payload_transferred</code>) and
+   <code>expires_at</code> (exclusive; checked with an injectable clock; the API requires a future value on create and
+   when the value changes on update, so an already expired rule can still be edited or disabled). Disabled and expired rules never match.</li>
+<li>Actions:
+   - <code>demote</code> with <code>target_severity</code>: the alert is created at that severity; <code>alerts.original_severity</code> and
+     <code>alerts.suppression_rule_id</code> record the change. A demote rule whose target is not lower than the alert
+     severity is skipped (a rule never raises a severity).
+   - <code>suppress</code>: no <code>alerts</code> row is created. One row goes to <code>suppressed_alerts</code> (unique <code>dedup_key</code>), so
+     repeated detection runs of the same session count once. Nothing is published to <code>/ws</code> or sent by the
+     webhook notifier, because the notifier only reads <code>alerts</code>.</li>
+<li>Order: among all matching rules a <code>suppress</code> rule beats a <code>demote</code> rule; inside one action the lowest rule
+   id wins. A rule's <code>hit_count</code> and <code>last_hit_at</code> change once per new alert or suppressed row (dedup
+   repeats do not count).</li>
+<li>Hash timing, both directions. <code>sessions.command_hash</code> is only filled for closed sessions by
+   <code>analytics_jobs.fill_command_hashes</code>. A <code>command_hash</code> matcher is never evaluated against the commands of
+   an open session: an attacker may send a known probe sequence first and continue, so a matching prefix
+   must not hide or demote the alert (the alert is raised normally). At raise time a <code>command_hash</code> rule can
+   only match a session that is already <code>closed</code> and whose stored hash is current
+   (<code>command_hash_count = command_count</code>); a missing or stale hash never matches. Such a closed session can
+   be suppressed or demoted at raise time. For alerts raised before the hash existed, a bounded, idempotent
+   housekeeping pass (<code>suppression.reevaluate</code>: alerts of the last 7 days, newest first in pages of 500
+   alerts, at most 10 pages per run, only alerts with no <code>original_severity</code> and no <code>suppression_rule_id</code>,
+   only closed sessions with a current stored hash) applies <code>demote</code> rules with a <code>command_hash</code>. It never
+   applies <code>suppress</code> rules, so a re-evaluated alert is lowered, never hidden.
+   Consequence: alerts are normally raised while the session is still open, before the hash is stored,
+   so a <code>suppress</code> rule whose only distinguishing matcher is <code>command_hash</code> rarely or never fires. Use
+   <code>demote</code> for command-hash rules (the seed rule does).
+   Dedup keys: a suppressed or demoted first alert occupies its dedup key. For command-level-only
+   classification alerts (no payload transfer) the key is <code>class-ip:&lt;category&gt;:&lt;src_ip&gt;:&lt;UTC day&gt;</code>, so
+   later such sessions of the same IP, category and day are not raised again, neither as an alert nor as a
+   <code>suppressed_alerts</code> row. A session with a captured transfer uses its own per-session key
+   <code>class:&lt;session&gt;:&lt;category&gt;</code> and is decided on its own.
+   Critical alerts are never suppressed: <code>decide</code> skips <code>suppress</code> rules for them, so they fall to a matching
+   <code>demote</code> rule or are raised as they are (for example a critical <code>disk_usage</code> alert; a <code>high</code> one can be
+   suppressed). The API also rejects a <code>suppress</code> rule whose only matcher is <code>require_no_transfer</code>
+   (a <code>suppress</code> rule needs <code>command_hash</code>, <code>kind</code>, <code>src_ip</code>, <code>src_cidr</code> or <code>src_asn</code>).</li>
+<li>Alerts are never deleted by this feature (owner decision). Events, sessions, commands, classifications and
+   MITRE techniques are never touched; suppression only affects the alert row.</li>
+<li>History. <code>suppressed_alerts</code> has no foreign key to the rule, so deleting a rule (hard delete, admin only)
+   keeps the log; <code>alerts.suppression_rule_id</code> also stays. <code>suppressed_alerts</code> follows the events/alerts
+   retention; rules are never swept. At most 200 rules.</li>
+<li>Rules are cached for 30 s in the process and the cache is invalidated on create, update and delete.
+   A generation counter ensures a load that started before an invalidation is not cached. Changes made
+   directly in the database take up to 30 s to apply.</li>
+<li>Seed rule (migration 12, idempotent by name <code>known-probe-filter-d882d096</code>): command hash
+   <code>d882d0964774607b8db753f534966863550f4b5a4b10d2b0bc2bfe8ef4bc5404</code>, kind
+   <code>classification:malware_deployment*</code>, <code>require_no_transfer</code>, demote to <code>low</code>. The same hash with a
+   transfer is not demoted.</li>
+<li>Rule CRUD is logged at INFO with the actor and rule id only, never the name or note.</li>
+</ol>
+<p>Consequences: a mistaken or overly broad rule hides alerts from the dashboard, the WebSocket and the webhook
+until it is edited or deleted; the <code>Suppressed alerts</code> tab and <code>suppressed_alerts</code> show what was hidden.
+Operators should prefer <code>demote</code> over <code>suppress</code> and add an expiry to temporary rules (OPERATIONS.md).</p>
+</div>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

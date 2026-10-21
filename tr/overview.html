@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proje Genel Bakışı - Honeypot Intelligence</title>
+<meta name="description" content="Honeypot Intelligence platformunun amaçları, kapsamı ve yakaladığı veriler, tek sayfada.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/overview.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/overview.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/overview.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/overview.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html" aria-current="page">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../overview.html" hreflang="en" lang="en">EN</a> | <a href="overview.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Proje Genel Bakışı</h1>
+<h2 id="amac">Amaç</h2>
+<p>Platform, <strong>gerçek internet saldırganlarını güvenli biçimde gözlemlemek</strong> ve ham telemetriyi kullanılabilir
+istihbarata dönüştürmek için vardır: kim bağlanıyor, hangi kimlik bilgilerini deniyor, oturum açtıktan sonra ne
+çalıştırıyor, hangi dosyaları gönderiyor ve davranışları MITRE ATT&amp;CK ile nasıl eşleşiyor. Yakalanan veri güvenlik
+araştırmalarında ve değerlendirmelerinde kullanılır; bu nedenle verinin tamamı saklanır (bkz. <a href="about.html">Hakkında</a>
+ve <a href="library/docs/decisions/0010-keep-all-logs-for-research.html">ADR 0010</a>).</p>
+<p>Projenin yol gösterici kuralı: <strong>gerçekçilik hiçbir zaman kısıtlamanın (containment) önüne geçmez.</strong> Tuzak,
+gerçek bir sunucudan daha az ikna edici olabilir, ama başkasına dokunabilmesi asla mümkün olmamalıdır.</p>
+<h2 id="kapsam-ici">Kapsam içi</h2>
+<ul>
+<li>tcp/22 üzerinde internete açık bir SSH tuzağı (orta etkileşimli, emüle kabuk; Cowrie 3.0.15). Telnet kapalıdır.</li>
+<li>Komut düzeyinde kayıt, canlı izleme ve yeniden oynatma (replay) için TTY kayıtları, SCP/SFTP dosya yakalama.</li>
+<li>Normalize edilmiş bir veri modeli (oturumlar, kimlik doğrulama denemeleri, komutlar, emüle süreçler, dosya
+  işlemleri, ağ niyetleri, payload'lar, sınıflandırmalar, MITRE eşlemeleri, alarmlar).</li>
+<li>Açık bir kanıt ve güven modeline sahip kural tabanlı tespit.</li>
+<li>DNS tabanlı kaynaklardan IP ve ASN zenginleştirmesi; isteğe bağlı itibar sorguları planlanmıştır.</li>
+<li>Analistler için ağırlıklı olarak salt okunur bir web paneli ve isteğe bağlı alarm bildirimleri.</li>
+<li>Varsayılan olarak her şeyi engelleyen ağ kısıtlaması ve bir erişilebilirlik bekçisi (watchdog).</li>
+</ul>
+<h2 id="kapsam-ds">Kapsam dışı</h2>
+<ul>
+<li>Gerçek komut çalıştırma: saldırgan komutları ana makinede asla çalıştırılmaz.</li>
+<li>Honeypot makinesinden saldırgan altyapısıyla aktif temas (tasarım gereği engellenir; ayrı bir bant dışı
+  (out-of-band) alma tasarımı yalnızca ÖNERİLMİŞTİR, bkz.
+  ADR 0014).</li>
+<li>Telnet ve diğer protokoller; yüksek etkileşimli dağıtımlar.</li>
+<li>Atıf (attribution): IP ve ASN verisi harici istihbarat olarak etiketlenir ve asla kimlik olarak ele alınmaz.</li>
+</ul>
+<h2 id="neler-yakalanr">Neler yakalanır</h2>
+<table>
+<thead>
+<tr>
+<th>Veri</th>
+<th>Kaynak</th>
+<th>Not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bağlantılar ve SSH istemci sürümleri</td>
+<td>Cowrie JSON günlüğü</td>
+<td>İstemci anahtar değişiminin HASSH parmak izlerini içerir.</td>
+</tr>
+<tr>
+<td>Kimlik doğrulama denemeleri</td>
+<td>Cowrie JSON günlüğü</td>
+<td>Saldırganların denediği kullanıcı adları ve parolalar; tuzak bazılarını kabul eder.</td>
+</tr>
+<tr>
+<td>Komutlar</td>
+<td>Cowrie JSON günlüğü, arka uç tarafından ayrıştırılır</td>
+<td>Emüle süreçlere, dosya işlemlerine ve ağ niyetlerine ayrıştırılır (<code>derived</code> etiketli).</td>
+</tr>
+<tr>
+<td>Terminal çıktısı</td>
+<td>Cowrie TTY kayıtları</td>
+<td>Canlı izleme ve yeniden oynatma için kullanılır.</td>
+</tr>
+<tr>
+<td>Yüklenen dosyalar</td>
+<td>Cowrie downloads (SCP/SFTP)</td>
+<td>SHA256, tür, entropi ve yazdırılabilir dizgiler; yalnızca okunur, asla çalıştırılmaz veya sunulmaz.</td>
+</tr>
+<tr>
+<td>Başarısız indirme denemeleri</td>
+<td>Ayrıştırılan komutlar</td>
+<td>Saldırganın <code>wget</code>/<code>curl</code> indirmeleri tasarım gereği başarısız olur ve niyet olarak kaydedilir.</td>
+</tr>
+<tr>
+<td>Kaynak IP istihbaratı</td>
+<td>Team Cymru DNS, ters DNS, isteğe bağlı yerel veritabanı</td>
+<td>"Harici istihbarat" olarak etiketlenir.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="guncel-durum">Güncel durum</h2>
+<p>Proje 2026-10-16 itibarıyla MAINTENANCE (bakım) aşamasındadır: 0.5.1 sürümü üretim VDS'inde yayındadır, 0.6.0
+zenginleştirme çalışması ise bir çalışma dalındadır (bkz. <a href="intelligence-pipeline.html">İstihbarat hattı</a> ve
+<a href="operations-history.html">İşletim geçmişi</a>). Gereksinimler ve durumları <a href="library/docs/REQUIREMENTS.html">gereksinim belgesindedir</a>;
+canlı sayılar <a href="index.html">ana sayfada</a> ve <a href="attack-landscape.html">saldırı manzarası</a> sayfasındadır.</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assumptions - Honeypot Intelligence</title>
+<meta name="description" content="docs/ASSUMPTIONS.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/docs/ASSUMPTIONS.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/ASSUMPTIONS.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/ASSUMPTIONS.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/ASSUMPTIONS.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../index.html">Home</a><a href="../../overview.html">Overview</a><a href="../../architecture.html">Architecture</a><a href="../../containment.html">Containment</a><a href="../../attack-landscape.html">Attack landscape</a><a href="../../campaigns.html">Campaigns</a><a href="../../indicators.html">Indicators</a><a href="../../intelligence-pipeline.html">Intelligence pipeline</a><a href="../../operations-history.html">Operations history</a><a href="../../decisions.html">Decisions</a><a href="../../research.html">Research</a><a href="../../glossary.html">Glossary</a><a href="../../about.html">About</a><a href="../index.html" aria-current="page">Library</a></nav>
+<nav class="lang" aria-label="Language"><a href="ASSUMPTIONS.html" hreflang="en" lang="en" aria-current="true">EN</a> | <a href="../../tr/library/docs/ASSUMPTIONS.html" hreflang="tr" lang="tr">TR</a></nav>
+</div></header>
+<main id="content">
+<div lang="en">
+<h1 id="assumptions">Assumptions</h1>
+<p>Values chosen without production measurement. Truth level for all entries: PLANNED (to be measured on
+production, then adjusted).</p>
+<h2 id="mitre-detection-050">MITRE detection (0.5.0)</h2>
+<p>Measurement 2026-10-16 (production, docs/reports/2026-10-16-production-0.5.0-upgrade.md, MEASURED):
+the credential thresholds were applied unchanged to 44805 failed attempts from 123 IPs; the
+attempt distribution is bimodal and N=5 separates the groups, 22 IPs stay below the thresholds.
+The values below are kept; they remain assumptions until the owner decides on tuning.</p>
+<p>Per-source-IP credential techniques (<code>backend/hpintel/analytics_jobs.py</code>, <code>aggregate_credential_techniques</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CRED_WINDOW_HOURS</code></td>
+<td>24</td>
+<td>Aggregation window of the housekeeping job (backfill uses consecutive 24 h windows)</td>
+</tr>
+<tr>
+<td><code>CRED_GUESS_MIN_ATTEMPTS</code></td>
+<td>5</td>
+<td>N: failed password attempts from one IP; matches the <code>brute_force_threshold</code> default</td>
+</tr>
+<tr>
+<td><code>CRED_GUESS_MIN_PASSWORDS</code></td>
+<td>3</td>
+<td>"Several": distinct passwords for at least one username (T1110.001)</td>
+</tr>
+<tr>
+<td><code>CRED_SPRAY_MIN_USERNAMES</code></td>
+<td>5</td>
+<td>M: distinct usernames sharing one password (T1110.003)</td>
+</tr>
+<tr>
+<td><code>CRED_SPRAY_BURST_USERNAMES</code> / <code>CRED_SPRAY_BURST_SECONDS</code></td>
+<td>10 / 60</td>
+<td>Many distinct usernames in a short time (T1110.003)</td>
+</tr>
+<tr>
+<td><code>CRED_LIKELY_FACTOR</code></td>
+<td>4</td>
+<td>Confidence is Likely at 4x a threshold, else Suspected</td>
+</tr>
+<tr>
+<td><code>CRED_MAX_IPS</code>, <code>CRED_MAX_ROWS_PER_IP</code>, <code>CRED_MAX_SESSIONS_PER_IP</code></td>
+<td>500, 20000, 5000</td>
+<td>Work bounds per call; a truncation is logged as a WARNING. Housekeeping runs rotate through the candidate IPs (in-process cursor after the last IP of a truncated run); the backfill uses <code>CRED_BACKFILL_MAX_IPS</code> = 5000 per window</td>
+</tr>
+<tr>
+<td><code>CRED_MAX_CANDIDATES</code></td>
+<td>50000</td>
+<td>Candidate IPs listed per call</td>
+</tr>
+</tbody>
+</table>
+<p>Rows written by this job are rewritten only when the confidence rises; count-only evidence changes are
+not written.</p>
+<p>The window is a function parameter, not an environment setting. Only failed <code>password</code> method
+attempts are counted. Evidence never contains passwords. All values: to be measured on production.</p>
+<p>File-name rules (<code>backend/hpintel/detection.py</code>):</p>
+<ul>
+<li>T1571 for download URLs: only downloader tools count (<code>DOWNLOADER_TOOLS</code>: wget, curl, tftp, ftpget,
+  ftp, fetch, lwp-download; <code>busybox wget</code> is seen as wget), and the explicit URL port must differ from
+  the scheme default (<code>URL_SCHEME_DEFAULT_PORTS</code>: http 80, https 443, ftp 21, tftp 69). A URL inside
+  <code>echo</code> or another command does not count. Stages starting with shell flow words (then, do, else,
+  elif, if, while, until, !) are parsed without that word.</li>
+<li><code>SYSTEM_DAEMON_NAMES</code> (T1036.005) = sshd, systemd, cron, crond, kworker, init, dbus-daemon, rsyslogd.
+  <code>SYSTEM_DIRS</code> = /usr/sbin, /usr/bin, /sbin, /bin, /usr/lib, /lib. A file with such a name that was
+  fetched or created in the session and is executed or made executable outside those directories maps
+  to T1036.005 (Likely). Captured payloads count when their stored name is executed or chmod +x'd.</li>
+<li>T1564.001 (Likely): a fetched, executed, chmod +x'd or captured file whose path has a component
+  starting with <code>.</code> other than <code>.</code>, <code>..</code> and the common user dot-names in <code>BENIGN_DOT_NAMES</code> (.ssh,
+  .config, .cache, .local, .aws, .docker, .gnupg, .bashrc, .bash_profile, .bash_logout, .bash_history,
+  .profile, .zshrc, .viminfo, .npm, .cargo, .venv, .git, .vimrc, .bash_aliases, .pki, .wget-hsts,
+  .lesshst). The working directory (<code>cd</code>) is not tracked, so <code>cd .x &amp;&amp; ./sshd</code> is not
+  seen as hidden.</li>
+<li>T1070.004 (Likely): <code>rm</code>, <code>unlink</code>, <code>shred</code> or <code>rmdir</code> of a name (or parent directory) that was
+  fetched, made executable or executed earlier in the same session; wildcards and <code>.</code>, <code>..</code>, empty names are ignored.</li>
+</ul>
+</div>
+</main>
+<footer>Data snapshot: 2026-10-21 | Source commit: bceebd0 | Defensive research; attacker indicators defanged</footer>
+</body>
+</html>

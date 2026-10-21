@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sözlük - Honeypot Intelligence</title>
+<meta name="description" content="Honeypot intelligence belgelerinde kullanılan terimler ve kısaltmalar.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/glossary.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/glossary.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/glossary.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/glossary.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html" aria-current="page">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../glossary.html" hreflang="en" lang="en">EN</a> | <a href="glossary.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Sözlük</h1>
+<table>
+<thead>
+<tr>
+<th>Terim</th>
+<th>Anlamı</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Honeypot ("bal kupu")</td>
+<td>Saldırıya uğramak ve gözlemlenmek için var olan tuzak sistem. Burada: kontrol altında bir SSH honeypot'u.</td>
+</tr>
+<tr>
+<td>Cowrie</td>
+<td>Emüle kabuklu açık kaynaklı orta etkileşimli SSH honeypot; 3.0.15 sürümü kullanılır.</td>
+</tr>
+<tr>
+<td>Orta etkileşim</td>
+<td>Saldırgana ikna edici ama emüle bir kabuk verilir; komutlar gerçekte çalıştırılmaz.</td>
+</tr>
+<tr>
+<td>Kısıtlama (containment)</td>
+<td>Honeypot'un başkalarına karşı kullanılmasını engelleyen kontroller bütünü (varsayılan reddetme çıkışı, ayrıcalıksız kullanıcılar, tünel yok).</td>
+</tr>
+<tr>
+<td>Çıkış (egress)</td>
+<td>Ana makineden giden ağ trafiği.</td>
+</tr>
+<tr>
+<td>nftables</td>
+<td>Kısıtlama kurallarını uygulayan Linux paket filtresi.</td>
+</tr>
+<tr>
+<td>uid</td>
+<td>Sayısal Linux kullanıcı kimliği; kurallar trafiği onu üreten kullanıcıya göre eşleyebilir.</td>
+</tr>
+<tr>
+<td>Watchdog (bekçi)</td>
+<td>Honeypot yanıt vermeyi bırakırsa onu yeniden başlatan mekanizma.</td>
+</tr>
+<tr>
+<td>Collector (toplayıcı)</td>
+<td>Cowrie JSON günlüğünü izleyen ve olayları idempotent biçimde alan arka uç bileşeni.</td>
+</tr>
+<tr>
+<td>hpintel</td>
+<td>Bu projenin FastAPI arka ucunun adı.</td>
+</tr>
+<tr>
+<td>WAL</td>
+<td>SQLite'ın write-ahead logging kipi.</td>
+</tr>
+<tr>
+<td>Oturum</td>
+<td>Bir saldırgan bağlantısının bağlanmadan kopmaya kadar tamamı.</td>
+</tr>
+<tr>
+<td>Payload</td>
+<td>Honeypot'a gönderilen (SCP/SFTP) veya bir komutla yazılan, SHA256 ile tanımlanan dosya.</td>
+</tr>
+<tr>
+<td>SHA256</td>
+<td>Dosyaları tanımlamak için kullanılan kriptografik özet fonksiyonu.</td>
+</tr>
+<tr>
+<td>Ağ niyeti (network intent)</td>
+<td>Bir komuttan ayrıştırılan ağ eylemi (örneğin bir <code>wget</code> hedefi); <code>attempted</code> durumu, komutun bunu istediği anlamına gelir, bir bağlantının kurulduğu anlamına gelmez.</td>
+</tr>
+<tr>
+<td>Kanıt: observed / derived</td>
+<td>Observed olgular Cowrie'den, derived olgular komut ayrıştırmasından gelir.</td>
+</tr>
+<tr>
+<td>Güven (confidence)</td>
+<td>Suspected &lt; Likely &lt; Observed &lt; Confirmed (bkz. <a href="intelligence-pipeline.html">İstihbarat hattı</a>).</td>
+</tr>
+<tr>
+<td>Doğruluk düzeyi</td>
+<td>PLANNED, IMPLEMENTED, REVIEWED, VALIDATED, MEASURED, UNKNOWN (bkz. <a href="about.html">Hakkında</a>).</td>
+</tr>
+<tr>
+<td>MITRE ATT&amp;CK</td>
+<td>Saldırgan taktiklerinin ve tekniklerinin T1105 gibi kimlikli herkese açık bilgi tabanı.</td>
+</tr>
+<tr>
+<td>IoC</td>
+<td>Güvenlik ihlali göstergesi (indicator of compromise): kötü amaçlı etkinlikle ilişkili IP, URL, alan adı veya dosya özeti.</td>
+</tr>
+<tr>
+<td>Defanging (etkisizleştirme)</td>
+<td>Bir göstergeyi yanlışlıkla tıklanamaz veya çözümlenemez yazma (<code>hxxp://</code>, <code>example[.]com</code>).</td>
+</tr>
+<tr>
+<td>ASN</td>
+<td>İnternette bir ağ işletmecisini tanımlayan otonom sistem numarası.</td>
+</tr>
+<tr>
+<td>Team Cymru</td>
+<td>IP adreslerini ASN'lere eşleyen servis; burada DNS üzerinden sorgulanır.</td>
+</tr>
+<tr>
+<td>HASSH</td>
+<td>Bir SSH istemcisinin veya sunucusunun anahtar değişimi teklifinin parmak izi.</td>
+</tr>
+<tr>
+<td>SFTP / SCP</td>
+<td>SSH üzerinden dosya aktarım protokolleri; bunlarla yapılan yüklemeler yakalanır.</td>
+</tr>
+<tr>
+<td>Dropper / loader (yükleyici)</td>
+<td>Gerçek kötü amaçlı yazılımı indirip başlatan küçük bir program veya komut.</td>
+</tr>
+<tr>
+<td>Solucan (worm)</td>
+<td>Kendini başka makinelere yayan kötü amaçlı yazılım.</td>
+</tr>
+<tr>
+<td>Kimlik bilgisi püskürtme (credential spraying)</td>
+<td>Çok sayıda hesaba veya makineye az sayıda parola denemek.</td>
+</tr>
+<tr>
+<td>Kaba kuvvet (brute force)</td>
+<td>Tek bir hesaba çok sayıda parola denemek.</td>
+</tr>
+<tr>
+<td>XMRig</td>
+<td>Botnet'lerce sık kötüye kullanılan yaygın açık kaynaklı kripto para madencisi.</td>
+</tr>
+<tr>
+<td>STIX 2.1</td>
+<td>Tehdit istihbaratı paylaşımı için standart bir JSON biçimi.</td>
+</tr>
+<tr>
+<td>ADR</td>
+<td>Mimari karar kaydı (bkz. <a href="decisions.html">Kararlar</a>).</td>
+</tr>
+<tr>
+<td>SOC</td>
+<td>Güvenlik operasyon merkezi; panel bir analist konsolu gibi tasarlanmıştır.</td>
+</tr>
+<tr>
+<td>Bastırma kuralı (suppression rule)</td>
+<td>Bilinen gürültü alarmlarını silmeden düşüren veya gizleyen kural.</td>
+</tr>
+<tr>
+<td>Taşıma paketi (migration bundle)</td>
+<td>Yeni bir sunucuya geçmek için veritabanının, ayarların ve honeypot kimliğinin şifreli dışa aktarımı.</td>
+</tr>
+<tr>
+<td>VDS</td>
+<td>Sanal ayrılmış sunucu; üretimde kullanılan kiralık makine türü.</td>
+</tr>
+<tr>
+<td>Sabitlenmiş adres (pinned address)</td>
+<td>Bir istemcinin bağlandığı, ama gerçek ana makine adının sertifikasını yine de doğruladığı sabit IP adresi.</td>
+</tr>
+</tbody>
+</table>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

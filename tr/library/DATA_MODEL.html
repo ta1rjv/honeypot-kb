@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Model - Honeypot Intelligence</title>
+<meta name="description" content="DATA_MODEL.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/library/DATA_MODEL.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/DATA_MODEL.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/DATA_MODEL.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/DATA_MODEL.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../index.html">Ana sayfa</a><a href="../overview.html">Genel bakış</a><a href="../architecture.html">Mimari</a><a href="../containment.html">Kısıtlama</a><a href="../attack-landscape.html">Saldırı manzarası</a><a href="../campaigns.html">Kampanyalar</a><a href="../indicators.html">Göstergeler</a><a href="../intelligence-pipeline.html">İstihbarat hattı</a><a href="../operations-history.html">İşletim geçmişi</a><a href="../decisions.html">Kararlar</a><a href="../research.html">Araştırma</a><a href="../glossary.html">Sözlük</a><a href="../about.html">Hakkında</a><a href="index.html" aria-current="page">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../../library/DATA_MODEL.html" hreflang="en" lang="en">EN</a> | <a href="DATA_MODEL.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<div lang="en">
+<h1 id="data-model">Data Model</h1>
+<p>Defined in <code>backend/hpintel/db.py</code> (SQLAlchemy Core). The schema uses portable
+types only so it runs on SQLite (current) and PostgreSQL (planned).</p>
+<p>Conventions:
+- Timestamps are ISO 8601 UTC strings <code>YYYY-MM-DDTHH:MM:SS.ffffffZ</code> (sortable as text).
+- JSON values are stored as TEXT.
+- Every attacker-controlled string is clipped to its column length.
+- <code>evidence</code> columns: <code>observed</code> (a Cowrie fact) or <code>derived</code> (parsed from a command line).
+- Schema versions are recorded in <code>schema_migrations</code>; <code>python -m hpintel.cli migrate</code> applies pending migrations (also run at service start).</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>initial schema</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>dead_letters</code> table, index <code>ix_commands_session_seq</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>index <code>ix_commands_session_ts</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>analytics indexes <code>ix_payload_events_ts</code>, <code>ix_ip_intelligence_asn</code>, <code>ix_ip_intelligence_country</code>, <code>ix_sessions_hassh</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>alert_notes</code> and <code>system_samples</code> tables</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>sessions.command_hash</code>, <code>sessions.command_hash_count</code>, index <code>ix_sessions_command_hash</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>payloads.entropy</code>, <code>entropy_bytes</code>, <code>head_sha256</code>, <code>extracted_iocs</code>; index <code>ix_payloads_head_sha256</code>; <code>payload_relations</code> table</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>sessions.hassh_algorithms</code> (TEXT), <code>sessions.command_norm_hash</code> (VARCHAR(64)); index <code>ix_sessions_command_norm_hash</code>; index <code>ix_authentication_attempts_timestamp</code> created if missing (0.4.0)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>host_status_samples</code>, <code>watchdog_events</code>, <code>f2b_ban_episodes</code> tables (0.4.0)</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>alert_deliveries</code> and <code>alert_delivery_cursors</code> tables; index <code>ix_alert_deliveries_channel_status</code> (0.4.0)</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>alert_ack_events</code> table (acknowledgement audit trail); no columns added to <code>alerts</code>, no backfill (0.5.0)</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>alert_suppression_rules</code> and <code>suppressed_alerts</code> tables; <code>alerts.original_severity</code> and <code>alerts.suppression_rule_id</code> columns (added only when missing); seed rule <code>known-probe-filter-d882d096</code> (0.5.0)</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>notification_digests</code> table (digest cursors of the Telegram and e-mail channels, ADR 0015; 0.5.0)</td>
+</tr>
+</tbody>
+</table>
+<p>Migrations 6, 7, 8 and 12 add columns with <code>ALTER TABLE ... ADD COLUMN</code> only when
+the column is missing, and migrations 8-13 create tables and indexes with
+<code>checkfirst</code>, so a re-run after a partial failure is safe. A fresh database
+gets every column and index from migration 1.</p>
+<p>After an upgrade to 0.4.0, <code>hassh_algorithms</code> (from the stored
+<code>cowrie.client.kex</code> events) and <code>command_norm_hash</code> of existing sessions are
+filled by the housekeeping jobs in bounded batches, or at once with
+<code>python -m hpintel.cli backfill-analytics</code>. Sessions whose kex event data was
+already cleared by retention get <code>""</code>.</p>
+<h2 id="tables">Tables</h2>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Key</th>
+<th>Purpose / important columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>events</code></td>
+<td><code>event_id</code> (UUIDv5 of raw line)</td>
+<td>Every normalized event: <code>timestamp</code> (UTC), <code>original_timestamp</code>, <code>session_id</code>, <code>source</code> (<code>cowrie</code>), <code>event_type</code>, <code>severity</code>, <code>src_ip</code>, <code>summary</code>, <code>raw_data</code> (original JSON line), <code>normalized_data</code>. Re-ingesting the same line is a no-op.</td>
+</tr>
+<tr>
+<td><code>sessions</code></td>
+<td><code>id</code> (Cowrie session id)</td>
+<td>Connection lifecycle: <code>src_ip/src_port</code>, <code>dst_ip/dst_port</code>, <code>start_time</code>, <code>end_time</code>, <code>duration_ms</code>, <code>status</code> (<code>active</code>/<code>closed</code>), <code>client_version</code>, <code>hassh</code>, <code>term_width/height</code>, <code>username</code>, <code>password</code> (attempted honeypot credential), <code>login_success</code>, <code>auth_attempts</code>, <code>command_count</code>, <code>ttylog</code>, <code>disconnect_reason</code>, <code>risk_score</code>, <code>categories</code> (JSON), <code>command_hash</code> (sha256 of the first 500 commands joined by newlines, filled by a background job for closed sessions; <code>""</code> when the command rows no longer exist), <code>command_hash_count</code> (the <code>command_count</code> the hash was computed for; the job recomputes the hash when they differ), <code>command_norm_hash</code> (sha256 of <code>"v1\n"</code> plus the same commands normalised by <code>normalize_command_v1</code>: heuristic script cluster key, API.md; <code>""</code> when the commands are gone), <code>hassh_algorithms</code> (the HASSH algorithm string of <code>cowrie.client.kex</code>, clipped to 4096 characters; <code>""</code> when the event carried none or its data is gone; NULL until ingested or backfilled; not returned by session listings).</td>
+</tr>
+<tr>
+<td><code>source_ips</code></td>
+<td><code>ip</code></td>
+<td>Per-attacker aggregates: first/last seen, sessions, auth attempts/successes, commands, payloads, risk score.</td>
+</tr>
+<tr>
+<td><code>ip_intelligence</code></td>
+<td><code>ip</code></td>
+<td>External intelligence: ASN, AS name, prefix, country, registry, allocation date, rDNS, city/coordinates (optional mmdb), <code>is_private</code>, <code>sources</code>, <code>error</code>, <code>fetched_at</code>.</td>
+</tr>
+<tr>
+<td><code>hosts</code></td>
+<td><code>sensor</code></td>
+<td>Honeypot sensors and their address.</td>
+</tr>
+<tr>
+<td><code>authentication_attempts</code></td>
+<td><code>id</code></td>
+<td>Each login attempt: method (password/publickey), username, password, key fingerprint, success, event id.</td>
+</tr>
+<tr>
+<td><code>credentials</code></td>
+<td><code>id</code></td>
+<td>Aggregated username/password pairs with attempts, successes, first/last seen.</td>
+</tr>
+<tr>
+<td><code>commands</code></td>
+<td><code>id</code></td>
+<td>Each command line typed: <code>seq</code> within the session, <code>input</code>, <code>known</code> (false when Cowrie reported the command as not found).</td>
+</tr>
+<tr>
+<td><code>processes</code></td>
+<td><code>id</code></td>
+<td>Emulated process tree derived from command lines: <code>parent</code>, <code>executable</code>, <code>argv</code>, <code>known</code>, <code>emulated</code> (always true: nothing is executed on the host).</td>
+</tr>
+<tr>
+<td><code>files</code></td>
+<td><code>id</code></td>
+<td>File operations (read/write/delete/chmod/execute/upload/download) with <code>sensitive</code> class (e.g. credentials, ssh keys, cron) and evidence.</td>
+</tr>
+<tr>
+<td><code>network_connections</code></td>
+<td><code>id</code></td>
+<td>Inbound connections (observed) and attempted outbound activity (derived from wget/curl/nc/ssh/... or observed from Cowrie download events): <code>direction</code>, <code>tool</code>, <code>dst_ip</code>, <code>dst_port</code>, <code>url</code>, <code>status</code> (<code>accepted</code>, <code>closed</code>, <code>attempted</code>, <code>succeeded</code>, <code>failed</code>, <code>blocked</code>), <code>evidence</code>.</td>
+</tr>
+<tr>
+<td><code>payloads</code></td>
+<td><code>sha256</code></td>
+<td>Captured files: filename, size, MIME/file type, strings sample, metadata (ELF class/arch/endianness, UPX hint, string counts), source URL, <code>stored_path</code> (never exposed by the API), <code>available</code>, <code>times_seen</code>, <code>entropy</code> (Shannon bits per byte over the first 4 MiB), <code>entropy_bytes</code> (bytes measured; 0 = file not readable, not retried), <code>head_sha256</code> (sha256 of the first 64 KiB, groups truncated copies), <code>extracted_iocs</code> (JSON: URLs, IPv4, BTC/XMR/ETH wallets found by heuristics, at most 100 values per kind and 8 KiB).</td>
+</tr>
+<tr>
+<td><code>payload_relations</code></td>
+<td><code>id</code>, unique (<code>sha256_prefix</code>, <code>sha256_full</code>)</td>
+<td>Result of a byte-by-byte compare of two payloads with the same <code>head_sha256</code>: <code>relation</code> = <code>prefix</code>, <code>differs</code>, <code>unreadable</code> or <code>too_large</code> (over 64 MiB, not compared), <code>checked_at</code>. Rows whose payloads are gone are removed by retention.</td>
+</tr>
+<tr>
+<td><code>payload_events</code></td>
+<td><code>id</code></td>
+<td>Each sighting of a payload: direction (download/upload), URL, destination file, session.</td>
+</tr>
+<tr>
+<td><code>attack_classifications</code></td>
+<td><code>id</code></td>
+<td>Category per session with <code>confidence</code>, <code>evidence</code> (JSON list), <code>event_ids</code> (JSON list).</td>
+</tr>
+<tr>
+<td><code>mitre_techniques</code></td>
+<td><code>id</code></td>
+<td>ATT&amp;CK technique per session: id, name, tactic, confidence, evidence, event ids.</td>
+</tr>
+<tr>
+<td><code>alerts</code></td>
+<td><code>id</code>, unique <code>dedup_key</code></td>
+<td>Severe classifications (&gt;= Likely), new payloads, disk usage: severity, kind, message, acknowledged. Classification keys: <code>class:&lt;session&gt;:&lt;category&gt;</code>; command-level-only <code>malware_deployment</code> (no captured transfer, no download chain): <code>class-ip:&lt;category&gt;:&lt;src_ip&gt;:&lt;UTC date&gt;</code>, severity <code>medium</code>. <code>original_severity</code> and <code>suppression_rule_id</code> (migration 12, no foreign key) are set when a suppression demote rule lowered the severity.</td>
+</tr>
+<tr>
+<td><code>alert_suppression_rules</code></td>
+<td><code>id</code>, unique <code>name</code></td>
+<td>Suppression rules (migration 12, ADR 0013): <code>enabled</code>, <code>action</code> (<code>demote</code>, <code>suppress</code>), <code>target_severity</code>, optional ANDed matchers <code>command_hash</code>, <code>kind</code> (exact or <code>prefix*</code>), <code>src_ip</code>, <code>src_cidr</code>, <code>src_asn</code>, <code>require_no_transfer</code>, plus <code>expires_at</code>, <code>hit_count</code>, <code>last_hit_at</code>, <code>created_by</code>, <code>created_at</code>, <code>updated_at</code>, <code>note</code>. At most 200 rows; never swept by retention.</td>
+</tr>
+<tr>
+<td><code>suppressed_alerts</code></td>
+<td><code>id</code>, unique <code>dedup_key</code>; indexes on <code>rule_id</code> and <code>timestamp</code></td>
+<td>Alerts hidden by a suppress rule (migration 12): <code>rule_id</code> (no foreign key, survives rule deletion), <code>timestamp</code>, <code>severity</code>, <code>kind</code>, <code>session_id</code>, <code>src_ip</code>, <code>message</code>. One row per dedup key. Follows the events retention.</td>
+</tr>
+<tr>
+<td><code>alert_notes</code></td>
+<td><code>id</code></td>
+<td>Analyst notes on an alert: <code>alert_id</code> (FK, deleted with the alert), <code>timestamp</code>, <code>author</code>, <code>text</code> (1-2000 characters).</td>
+</tr>
+<tr>
+<td><code>system_samples</code></td>
+<td><code>id</code></td>
+<td>One row per housekeeping run for the Health trend: database and WAL size, disk used/free, Cowrie log size, collector counters of the running process. Follows the events retention.</td>
+</tr>
+<tr>
+<td><code>host_status_samples</code></td>
+<td><code>id</code>, unique <code>ts</code></td>
+<td>One row per distinct <code>generated_at</code> of the root status exporter (migration 9): <code>cowrie_active</code> (1/0, NULL = unknown), <code>cowrie_restarts</code>, <code>watchdog_failures</code>, <code>cowrie_egress_pkts</code>, <code>cowrie_egress_bytes</code>, <code>egress_pkts</code>, <code>egress_bytes</code> (raw nftables counter values; they reset on reboot or ruleset reload, deltas are computed on read), <code>banned_count</code>, <code>f2b_available</code>. Source of the downtime and containment-trend figures. Follows the events retention.</td>
+</tr>
+<tr>
+<td><code>watchdog_events</code></td>
+<td><code>id</code>, unique (<code>ts</code>, <code>kind</code>)</td>
+<td>Cowrie watchdog events copied from the exporter (migration 9): <code>kind</code> (<code>probe_failure</code>, <code>restart</code>, <code>restart_failed</code>), <code>detail</code> (&lt;= 255 characters). Follows the events retention.</td>
+</tr>
+<tr>
+<td><code>alert_deliveries</code></td>
+<td><code>id</code>, unique (<code>alert_id</code>, <code>channel</code>); index <code>ix_alert_deliveries_channel_status</code> (<code>channel</code>, <code>status</code>)</td>
+<td>Delivery state per alert and channel (migration 10; channels <code>telegram</code> and <code>email</code> added by ADR 0015 need no migration, the column is <code>String(16)</code>): <code>alert_id</code> (FK, deleted with the alert), <code>channel</code> (<code>webhook</code>, <code>telegram</code>, <code>email</code>), <code>status</code> (<code>sent</code>, <code>retry</code>, <code>failed</code>), <code>attempts</code>, <code>last_attempt</code>, <code>last_error</code> (sanitized reason, never a URL or secret).</td>
+</tr>
+<tr>
+<td><code>alert_ack_events</code></td>
+<td><code>id</code>; index <code>ix_alert_ack_events_alert_id</code></td>
+<td>Append-only acknowledgement audit trail (migration 11): <code>alert_id</code> (FK, deleted with the alert), <code>timestamp</code>, <code>actor</code> (JWT username, &lt;= 128), <code>action</code> (<code>ack</code>, <code>unack</code>), <code>reason</code> (&lt;= 500 characters, nullable), <code>bulk</code>. One row per real state change only. Retention removes the audit history together with its alert.</td>
+</tr>
+<tr>
+<td><code>alert_delivery_cursors</code></td>
+<td><code>id</code>, unique <code>channel</code></td>
+<td>Notifier high-water mark per channel (migration 10): <code>last_alert_id</code> (highest alert id already evaluated), <code>updated_at</code>. Never pruned: removing it would re-open the backlog boundary.</td>
+</tr>
+<tr>
+<td><code>notification_digests</code></td>
+<td><code>channel</code> (primary key)</td>
+<td>Digest cursor per channel (migration 13, ADR 0015; <code>telegram</code>, <code>email</code>): <code>last_alert_id</code> and <code>last_suppressed_id</code> (highest <code>alerts</code> / <code>suppressed_alerts</code> id already summarised or skipped), <code>last_sent_at</code> (end of the last digest interval). The first digest pass of a channel only records the current ids. Holds no alert data; never pruned (dropping it only restarts the interval).</td>
+</tr>
+<tr>
+<td><code>artifacts</code></td>
+<td><code>id</code></td>
+<td>TTY recordings and other files linked to sessions (path, sha256, size).</td>
+</tr>
+<tr>
+<td><code>collector_state</code></td>
+<td><code>name</code></td>
+<td>Collector position: inode and byte offset of the Cowrie log.</td>
+</tr>
+<tr>
+<td><code>dead_letters</code></td>
+<td><code>id</code></td>
+<td>Raw lines that failed ingest deterministically (clipped), with the error type, for manual recovery.</td>
+</tr>
+<tr>
+<td><code>schema_migrations</code></td>
+<td><code>version</code></td>
+<td>Applied migrations.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="event-taxonomy">Event taxonomy</h2>
+<table>
+<thead>
+<tr>
+<th>Cowrie event</th>
+<th><code>event_type</code></th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cowrie.session.connect</td>
+<td>connection.inbound</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.session.closed</td>
+<td>connection.closed</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.client.version</td>
+<td>client.version</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.client.kex</td>
+<td>client.kex</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.client.fingerprint</td>
+<td>auth.publickey_offered</td>
+<td>low</td>
+</tr>
+<tr>
+<td>cowrie.client.var</td>
+<td>client.env</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.client.size</td>
+<td>terminal.size</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.session.params</td>
+<td>session.params</td>
+<td>info</td>
+</tr>
+<tr>
+<td>cowrie.login.success</td>
+<td>auth.success</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>cowrie.login.failed</td>
+<td>auth.failure</td>
+<td>low</td>
+</tr>
+<tr>
+<td>cowrie.command.input</td>
+<td>command.input</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>cowrie.command.failed</td>
+<td>command.unknown</td>
+<td>low</td>
+</tr>
+<tr>
+<td>cowrie.session.input</td>
+<td>command.stdin</td>
+<td>low</td>
+</tr>
+<tr>
+<td>cowrie.session.file_download</td>
+<td>payload.download</td>
+<td>high</td>
+</tr>
+<tr>
+<td>cowrie.session.file_download.failed</td>
+<td>payload.download_failed</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>cowrie.session.file_upload</td>
+<td>payload.upload</td>
+<td>high</td>
+</tr>
+<tr>
+<td>cowrie.direct-tcpip.request</td>
+<td>network.forward_request</td>
+<td>high</td>
+</tr>
+<tr>
+<td>cowrie.direct-tcpip.data</td>
+<td>network.forward_data</td>
+<td>high</td>
+</tr>
+<tr>
+<td>cowrie.log.closed</td>
+<td>session.ttylog</td>
+<td>info</td>
+</tr>
+</tbody>
+</table>
+<p><code>network.forward_*</code> events are not produced while Cowrie forwarding is disabled
+(see NETWORK.md).</p>
+<h2 id="classification-vocabulary">Classification vocabulary</h2>
+<p>Confidence (weakest first): <strong>Suspected</strong> (single weak indicator), <strong>Likely</strong>
+(strong indicator or chain), <strong>Observed</strong> (the behaviour itself is a fact in the
+telemetry), <strong>Confirmed</strong> (a captured payload was then executed in the same
+session). Techniques record the confidence of the observation; categories record
+the confidence of the intent.</p>
+<p>Categories: reconnaissance, brute_force, credential_attack, automated_scanner,
+downloader, malware_deployment, cryptomining, persistence, privilege_escalation,
+data_theft, lateral_movement, reverse_shell, destructive, defense_evasion,
+botnet_activity, c2, proxy_abuse. Severe (alerting at &gt;= Likely):
+malware_deployment, cryptomining, persistence, reverse_shell, destructive,
+lateral_movement, c2, proxy_abuse, botnet_activity.</p>
+<h2 id="retention-defaults-hpintel_retention_">Retention (defaults, <code>HPINTEL_RETENTION_*</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Days</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sessions and their child rows</td>
+<td>365</td>
+<td>by <code>start_time</code></td>
+</tr>
+<tr>
+<td>events</td>
+<td>180</td>
+<td>events of still-retained sessions are kept with raw/normalized data cleared; unowned events deleted</td>
+</tr>
+<tr>
+<td>network connections</td>
+<td>180</td>
+<td>unless owned by a retained session</td>
+</tr>
+<tr>
+<td>payload rows</td>
+<td>365</td>
+<td>by <code>last_seen</code></td>
+</tr>
+<tr>
+<td>dead letters</td>
+<td>180</td>
+<td>same as events</td>
+</tr>
+<tr>
+<td><code>system_samples</code>, <code>host_status_samples</code>, <code>watchdog_events</code></td>
+<td>180</td>
+<td>same as events (by <code>timestamp</code> / <code>ts</code>)</td>
+</tr>
+<tr>
+<td><code>f2b_ban_episodes</code></td>
+<td>180</td>
+<td>same as events, closed episodes only (by <code>last_seen</code>); open episodes are kept</td>
+</tr>
+<tr>
+<td><code>suppressed_alerts</code></td>
+<td>180</td>
+<td>same as events (by <code>timestamp</code>)</td>
+</tr>
+<tr>
+<td><code>alert_suppression_rules</code></td>
+<td>-</td>
+<td>never pruned</td>
+</tr>
+<tr>
+<td><code>alert_notes</code>, <code>alert_ack_events</code>, <code>alert_deliveries</code></td>
+<td>-</td>
+<td>removed with their alert (orphans swept)</td>
+</tr>
+<tr>
+<td><code>alert_delivery_cursors</code></td>
+<td>-</td>
+<td>never pruned</td>
+</tr>
+</tbody>
+</table>
+<p>The day values are the code defaults; the shipped
+<code>deployment/config/hpintel.env.example</code> sets all <code>HPINTEL_RETENTION_*_DAYS</code> to
+36500 (keep everything, ADR 0010).</p>
+<p>Raw Cowrie files are pruned by <code>cowrie-retention.timer</code>: rotated JSON logs 30 days,
+TTY recordings 180 days, captured downloads 365 days.</p>
+</div>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

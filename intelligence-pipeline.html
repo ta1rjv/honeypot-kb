@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intelligence Pipeline - Honeypot Intelligence</title>
+<meta name="description" content="How raw honeypot events become classified, evidence-backed intelligence - enrichment sources, confidence model, MITRE mapping and the planned reputation lookups.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/intelligence-pipeline.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/intelligence-pipeline.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/intelligence-pipeline.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/intelligence-pipeline.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Home</a><a href="overview.html">Overview</a><a href="architecture.html">Architecture</a><a href="containment.html">Containment</a><a href="attack-landscape.html">Attack landscape</a><a href="campaigns.html">Campaigns</a><a href="indicators.html">Indicators</a><a href="intelligence-pipeline.html" aria-current="page">Intelligence pipeline</a><a href="operations-history.html">Operations history</a><a href="decisions.html">Decisions</a><a href="research.html">Research</a><a href="glossary.html">Glossary</a><a href="about.html">About</a><a href="library/index.html">Library</a></nav>
+<nav class="lang" aria-label="Language"><a href="intelligence-pipeline.html" hreflang="en" lang="en" aria-current="true">EN</a> | <a href="tr/intelligence-pipeline.html" hreflang="tr" lang="tr">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Intelligence Pipeline</h1>
+<p>Raw Cowrie events are turned into intelligence in four steps: normalize, derive, classify, enrich. Every derived
+fact says where it came from.</p>
+<h2 id="1-normalize-and-derive">1. Normalize and derive</h2>
+<p>The collector and normalizer give every event a stable taxonomy and a deterministic id. The command parser then
+derives emulated processes, file operations and network intents from the typed command line. Derived rows carry
+<code>evidence="derived"</code>; rows read directly from Cowrie carry <code>observed</code>. Network intents from <code>wget</code> or <code>curl</code> have
+status <code>attempted</code> and never mean a real connection was made.</p>
+<h2 id="2-evidence-and-confidence-model">2. Evidence and confidence model</h2>
+<p><a href="library/docs/decisions/0008-evidence-confidence-model.html">ADR 0008</a> (accepted 2026-10-06, IMPLEMENTED):</p>
+<table>
+<thead>
+<tr>
+<th>Confidence</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Suspected</td>
+<td>A weak or single indicator.</td>
+</tr>
+<tr>
+<td>Likely</td>
+<td>Several consistent indicators, or a strong one without confirmation.</td>
+</tr>
+<tr>
+<td>Observed</td>
+<td>The behaviour itself was seen in the recorded session.</td>
+</tr>
+<tr>
+<td>Confirmed</td>
+<td>Requires a captured payload that is then executed in the same session.</td>
+</tr>
+</tbody>
+</table>
+<p>The vocabulary is ordered Suspected &lt; Likely &lt; Observed &lt; Confirmed (definitions in
+<a href="library/DATA_MODEL.html">DATA_MODEL.md</a>). Techniques record the confidence of the observation, categories the
+confidence of the intent. Alerts for severe categories require at least Likely, and every classification lists
+its evidence strings and event ids, so an analyst can always trace a verdict back to raw events.</p>
+<h2 id="3-mitre-attck-mapping">3. MITRE ATT&amp;CK mapping</h2>
+<p>Detection rules and the command parser map behaviour to techniques, for example T1082 system information
+discovery, T1105 ingress tool transfer, T1059.004 Unix shell, T1222.002 file permission modification, T1098.004
+SSH authorized keys, T1070 indicator removal and T1496 resource hijacking. Because bots use one attempt per
+connection, per-source credential techniques (T1110.001 guessing, T1110.003 spraying) are aggregated by a
+housekeeping job rather than per session. The thresholds are documented assumptions in the
+<a href="library/docs/ASSUMPTIONS.html">assumptions record</a>. Technique rows can be re-derived for stored sessions after
+a rule change (<code>redetect-techniques</code>); this was done once on production on 2026-10-16 and left the alert count
+unchanged (MEASURED). The live technique table is on the <a href="indicators.html">Indicators</a> page.</p>
+<h2 id="4-ip-intelligence-in-production">4. IP intelligence (in production)</h2>
+<p><a href="library/docs/decisions/0007-ip-intelligence-sources.html">ADR 0007</a> (accepted 2026-10-06, IMPLEMENTED):</p>
+<ul>
+<li>Team Cymru IP-to-ASN data over DNS: ASN, prefix, country, registry, AS name. No API key.</li>
+<li>Reverse DNS, switchable, because PTR queries reach name servers controlled by attackers.</li>
+<li>An optional local MaxMind-format database for city and coordinates, supplied by the operator.</li>
+<li>Results are labelled "external intelligence" and are never treated as identity.</li>
+</ul>
+<h2 id="5-payload-analysis">5. Payload analysis</h2>
+<p>Uploaded files are hashed (SHA256), typed by magic bytes, measured (size, entropy) and scanned for printable
+strings with URLs, IPs and shell keywords ranked first. ELF headers are parsed. Files that share a head hash are
+verified byte by byte to find truncated copies of one binary. Files are only read: never executed, never served
+by the API, never committed to source control.</p>
+<h2 id="6-alert-workflow">6. Alert workflow</h2>
+<p>Alerts have severities, can be searched, acknowledged in bulk and annotated; known noise can be demoted or
+hidden with suppression rules. Opt-in webhook, Telegram and e-mail channels deliver alerts above a per-channel
+threshold with rate limits and an optional digest (<a href="library/docs/decisions/0011-webhook-alert-notifications.html">ADR 0011</a>,
+<a href="library/docs/decisions/0015-telegram-and-smtp-receivers.html">ADR 0015</a>). On the production host these channels
+are not configured (status 2026-10-16).</p>
+<h2 id="7-planned-external-reputation-enrichment-adr-0018">7. Planned: external reputation enrichment (ADR 0018)</h2>
+<p>Status: <strong>not released</strong>. ADR 0018 was accepted on
+2026-10-16 for the 0.6.0 work. Its egress and configuration foundation and a pilot client for Shodan InternetDB
+are IMPLEMENTED on a work branch and unit-tested against local fakes only; review and validation on a VM or
+against a real provider are NOT VERIFIED. Clients for AbuseIPDB, GreyNoise, URLhaus and VirusTotal are PLANNED.</p>
+<p>Design summary:</p>
+<ul>
+<li>A fixed set of five providers; host names are constants in code, so an operator cannot redirect a provider.</li>
+<li>Every provider needs its own explicit firewall rule for the backend user only (one to four pinned IPv4
+  addresses, one port). Without the keys the ruleset does not change.</li>
+<li>Connections go to pinned addresses with certificate verification against the real host name; no redirects, no
+  proxies, a 64 KiB response cap, per-provider daily and per-minute quotas, persisted pauses on rate limits.</li>
+<li>An operator command compares the pins with current DNS answers; nothing refreshes the firewall automatically.</li>
+<li>Results are informational only: they never change a risk score, create or suppress an alert, or enter the IoC
+  export. The pilot never yields a "malicious" verdict because exposure data is not an attacker verdict.</li>
+<li>Sending an attacker address to a third party discloses research interest, so it is opt-in per provider and the
+  operator must check provider terms.</li>
+</ul>
+<p>Provider facts, limits and a DNS snapshot are in the research note
+(<a href="library/docs/research/enrichment-providers-2026-10-16.html">enrichment providers, 2026-10-16</a>); multi-day
+address stability of the providers is UNVERIFIED.</p>
+<h2 id="8-planned-out-of-band-retrieval-and-sandbox-adr-0014">8. Planned: out-of-band retrieval and sandbox (ADR 0014)</h2>
+<p>Fetching attacker URLs and detonating samples is PROPOSED only, and deferred (2026-10-15). The
+design keeps the sensor unchanged and moves retrieval and analysis to separate hosts with one-way, pull-only data
+flow (ADR 0014).</p>
+</main>
+<footer>Data snapshot: 2026-10-21 | Source commit: bceebd0 | Defensive research; attacker indicators defanged</footer>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saldırı Manzarası - Honeypot Intelligence</title>
+<meta name="description" content="Üretim anlık görüntüsünden canlı istatistikler - oturumlar, kimlik bilgileri, komutlar, SSH istemcileri, ülkeler, ASN&#x27;ler ve alarm önem dereceleri.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/attack-landscape.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/attack-landscape.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/attack-landscape.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/attack-landscape.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html" aria-current="page">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../attack-landscape.html" hreflang="en" lang="en">EN</a> | <a href="attack-landscape.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Saldırı Manzarası</h1>
+<p>Bu sayfadaki tüm değerler <strong>2026-10-21</strong> tarihinde alınan tek bir üretim anlık görüntüsünden gelir. Honeypot
+bir tuzaktır: "başarılı oturum açma", yalnızca tuzağın kimlik bilgilerini kabul ettiği anlamına gelir; gerçek bir
+hesap söz konusu değildir. Kaynak ülkeler ve ASN'ler bağlanan adres hakkında harici istihbarattır ve arkasındaki
+kişi hakkında hiçbir şey söylemez.</p>
+<h2 id="toplamlar">Toplamlar</h2>
+<table>
+<thead>
+<tr>
+<th>Ölçüt</th>
+<th>Değer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dönem (UTC)</td>
+<td>2026-10-07T20:21:19.596413Z - 2026-10-21T12:46:36.870832Z (15 gün)</td>
+</tr>
+<tr>
+<td>Oturum</td>
+<td>78.711</td>
+</tr>
+<tr>
+<td>Benzersiz kaynak IP</td>
+<td>1.319</td>
+</tr>
+<tr>
+<td>Oturum açma denemesi</td>
+<td>75.464</td>
+</tr>
+<tr>
+<td>Başarılı oturum açma</td>
+<td>1.092</td>
+</tr>
+<tr>
+<td>Komut</td>
+<td>1.939</td>
+</tr>
+<tr>
+<td>Yakalanan dosya aktarımları (indirme olayları: saldırganın tuzağa çektirdiği dosyalar; yüklemeler hariç)</td>
+<td>541</td>
+</tr>
+<tr>
+<td>Benzersiz payload SHA256 değeri</td>
+<td>18</td>
+</tr>
+<tr>
+<td>Alarm</td>
+<td>130</td>
+</tr>
+<tr>
+<td>ASN</td>
+<td>505</td>
+</tr>
+<tr>
+<td>Ülke</td>
+<td>90</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gunluk-oturumlar">Günlük oturumlar</h2>
+<svg class="chart" viewBox="0 0 720 220" role="img" aria-label="Günlük oturum sayısı"><title>Günlük oturum sayısı</title><rect class="b" x="12.69" y="162.01" width="37.55" height="35.99"><title>2026-10-07: 1.769</title></rect><rect class="b" x="59.63" y="119.87" width="37.55" height="78.13"><title>2026-10-08: 3.841</title></rect><rect class="b" x="106.56" y="110.59" width="37.55" height="87.41"><title>2026-10-09: 4.297</title></rect><rect class="b" x="153.49" y="46.70" width="37.55" height="151.30"><title>2026-10-10: 7.438</title></rect><rect class="b" x="200.43" y="28.14" width="37.55" height="169.86"><title>2026-10-11: 8.350</title></rect><rect class="b" x="247.36" y="123.91" width="37.55" height="74.09"><title>2026-10-12: 3.642</title></rect><rect class="b" x="294.29" y="104.81" width="37.55" height="93.19"><title>2026-10-13: 4.581</title></rect><rect class="b" x="341.23" y="81.01" width="37.55" height="116.99"><title>2026-10-14: 5.751</title></rect><rect class="b" x="388.16" y="83.35" width="37.55" height="114.65"><title>2026-10-15: 5.636</title></rect><rect class="b" x="435.09" y="102.31" width="37.55" height="95.69"><title>2026-10-16: 4.704</title></rect><rect class="b" x="482.03" y="129.28" width="37.55" height="68.72"><title>2026-10-17: 3.378</title></rect><rect class="b" x="528.96" y="125.01" width="37.55" height="72.99"><title>2026-10-18: 3.588</title></rect><rect class="b" x="575.89" y="49.06" width="37.55" height="148.94"><title>2026-10-19: 7.322</title></rect><rect class="b" x="622.83" y="16.00" width="37.55" height="182.00"><title>2026-10-20: 8.947</title></rect><rect class="b" x="669.76" y="86.79" width="37.55" height="111.21"><title>2026-10-21: 5.467</title></rect><text x="8" y="214">2026-10-07</text><text x="712" y="214" text-anchor="end">2026-10-21</text><text x="8" y="11">en yüksek: 8.947</text></svg>
+<h2 id="kimlik-bilgileri">Kimlik bilgileri</h2>
+<p>Saldırganlar ezici çoğunlukla varsayılan ve zayıf kimlik bilgilerinden oluşan kısa listeler kullanır. Kullanıcı adları:</p>
+<table>
+<thead><tr><th>Değer</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>root</td><td class="num">15.070</td></tr>
+<tr><td>ubuntu</td><td class="num">1.665</td></tr>
+<tr><td>admin</td><td class="num">1.655</td></tr>
+<tr><td>user</td><td class="num">984</td></tr>
+<tr><td>deploy</td><td class="num">735</td></tr>
+<tr><td>test</td><td class="num">603</td></tr>
+<tr><td>user1</td><td class="num">317</td></tr>
+<tr><td>dev</td><td class="num">311</td></tr>
+<tr><td>Tronlong</td><td class="num">310</td></tr>
+<tr><td>postgres</td><td class="num">299</td></tr>
+<tr><td>ftpuser</td><td class="num">296</td></tr>
+<tr><td>claude</td><td class="num">267</td></tr>
+<tr><td>oracle</td><td class="num">260</td></tr>
+<tr><td>debian</td><td class="num">257</td></tr>
+<tr><td>testuser</td><td class="num">234</td></tr>
+<tr><td>git</td><td class="num">230</td></tr>
+<tr><td>pi</td><td class="num">226</td></tr>
+<tr><td>deployer</td><td class="num">212</td></tr>
+<tr><td>minecraft</td><td class="num">209</td></tr>
+<tr><td>linaro</td><td class="num">192</td></tr>
+</tbody></table>
+<p>Parolalar:</p>
+<table>
+<thead><tr><th>Değer</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>123456</td><td class="num">2.768</td></tr>
+<tr><td>123</td><td class="num">1.302</td></tr>
+<tr><td>1234</td><td class="num">1.005</td></tr>
+<tr><td>password</td><td class="num">727</td></tr>
+<tr><td>12345678</td><td class="num">667</td></tr>
+<tr><td>admin</td><td class="num">635</td></tr>
+<tr><td>1</td><td class="num">624</td></tr>
+<tr><td>root</td><td class="num">554</td></tr>
+<tr><td>12345</td><td class="num">543</td></tr>
+<tr><td>123456789</td><td class="num">381</td></tr>
+<tr><td>P@ssw0rd</td><td class="num">360</td></tr>
+<tr><td>123123</td><td class="num">249</td></tr>
+<tr><td>p@ssw0rd</td><td class="num">237</td></tr>
+<tr><td>111111</td><td class="num">231</td></tr>
+<tr><td>admin123</td><td class="num">227</td></tr>
+<tr><td>1qaz@WSX</td><td class="num">210</td></tr>
+<tr><td>qwerty</td><td class="num">207</td></tr>
+<tr><td>abc123</td><td class="num">198</td></tr>
+<tr><td>Admin123</td><td class="num">180</td></tr>
+<tr><td>1234567890</td><td class="num">173</td></tr>
+</tbody></table>
+<p>Bunlar, bir tuzağa karşı saldırganın sağladığı tahminlerdir ve savunma amaçlı araştırma için gösterilir (örneğin
+yasak listeleri oluşturmak veya botnet sözlüklerini anlamak).</p>
+<h2 id="komutlar">Komutlar</h2>
+<p>Oturum açıldıktan sonra kaydedilen en sık komut satırları. Komutlar yalnızca günlüğe yazılır; asla çalıştırılmaz.</p>
+<table>
+<thead><tr><th>Değer</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>#!/bin/bash
+echo &quot;xxxxxx&quot;
+</td><td class="num">484</td></tr>
+<tr><td>printf &quot;#!/bin/bash\necho \&quot;xxxxxx\&quot;\n&quot; &gt; filter &amp;&amp; chmod +x filter &amp;&amp; ./filter &amp;&amp; rm -rf filter</td><td class="num">484</td></tr>
+<tr><td>uname -s -v -n -r -m</td><td class="num">358</td></tr>
+<tr><td>export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+uname=$(uname -s -v -n -m 2&gt;/dev/null || /bin/uname -s -v -n -m 2&gt;/dev/null || /usr/bin/uname -s -v -n -m 2&gt;/dev/null || busybox uname -s -v -n -m 2&gt;/dev/null || ( [ -f /proc/version ] &amp;&amp; head -1 /proc/version | cut -d&#x27; &#x27;</td><td class="num">242</td></tr>
+<tr><td>uname -a</td><td class="num">42</td></tr>
+<tr><td>/bin/./uname -s -v -n -r -m</td><td class="num">37</td></tr>
+<tr><td>uname -a; echo -e &quot;\x61\x75\x74\x68\x5F\x6F\x6B\x0A&quot;; cd /tmp || cd /var/tmp || cd /dev/shm; echo &#x27;<span class="redacted" lang="tr">[gizlendi]</span></td><td class="num">17</td></tr>
+<tr><td>/ip cloud print</td><td class="num">13</td></tr>
+<tr><td>cat /proc/cpuinfo</td><td class="num">12</td></tr>
+<tr><td>echo Hi | cat -n</td><td class="num">12</td></tr>
+<tr><td>ifconfig</td><td class="num">12</td></tr>
+<tr><td>ps -ef | grep &#x27;[Mm]iner&#x27;</td><td class="num">12</td></tr>
+<tr><td>ps | grep &#x27;[Mm]iner&#x27;</td><td class="num">12</td></tr>
+<tr><td>locate D877F783D5D3EF8Cs</td><td class="num">11</td></tr>
+<tr><td>ls -la ~/.local/share/TelegramDesktop/tdata /home/*/.local/share/TelegramDesktop/tdata /dev/ttyGSM* /dev/ttyUSB-mod* /var/spool/sms/* /var/log/smsd.log /etc/smsd.conf* /usr/bin/qmuxd /var/qmux_connect_socket /etc/config/simman /dev/modem* /var/config/sms/*</td><td class="num">11</td></tr>
+<tr><td>uname -s -v -n -r -m 2&gt;/dev/null</td><td class="num">10</td></tr>
+<tr><td>cat /proc/cpuinfo | grep model | grep name | wc -l</td><td class="num">8</td></tr>
+<tr><td>cat /proc/cpuinfo | grep name | head -n 1 | awk &#x27;{print $4,$5,$6,$7,$8,$9;}&#x27;</td><td class="num">8</td></tr>
+<tr><td>cat /proc/cpuinfo | grep name | wc -l</td><td class="num">8</td></tr>
+<tr><td>cd ~ &amp;&amp; rm -rf .ssh &amp;&amp; mkdir .ssh &amp;&amp; echo &quot;ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEArDp4cun2lhr4KUhBGE7VvAcwdli2a8dbnrTOrbMz1+5O73fcBOx8NVbUT0bUanUV9tJ2/9p7+vD0EpZ3Tz/+0kX34uAx1RV/75GVOmNx+9EuWOnvNoaJe0QXxziIg9eLBHpgLMuakb5+BgTFB+rKJAw9u9FSTDengvS8hX1kNFS4Mjux0hJOK8rvcEmPecjdySYMb66nylAKGwCEE6WEQHmd1mUPg</td><td class="num">8</td></tr>
+</tbody></table>
+<h2 id="ssh-istemci-surumleri">SSH istemci sürümleri</h2>
+<p>İstemci kimlik dizgileri çoğunlukla araç ailesini ele verir (örneğin Go tabanlı tarayıcılar veya libssh bağlamaları).</p>
+<table>
+<thead><tr><th>Değer</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>SSH-2.0-Go</td><td class="num">72.739</td></tr>
+<tr><td>SSH-2.0-libssh_0.9.6</td><td class="num">2.716</td></tr>
+<tr><td>SSH-2.0-libssh_0.11.1</td><td class="num">161</td></tr>
+<tr><td>SSH-2.0-OpenSSH_7.4</td><td class="num">70</td></tr>
+<tr><td>SSH-2.0-PUTTY</td><td class="num">68</td></tr>
+<tr><td>SSH-2.0-ZGrab ZGrab SSH Survey</td><td class="num">50</td></tr>
+<tr><td>SSH-2.0-libssh2_1.11.1</td><td class="num">42</td></tr>
+<tr><td>SSH-2.0-Nmap-SSH2-Hostkey</td><td class="num">36</td></tr>
+<tr><td>SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.17</td><td class="num">35</td></tr>
+<tr><td>GET / HTTP/1.1</td><td class="num">32</td></tr>
+<tr><td>SSH-2.0-OpenSSH_8.2</td><td class="num">26</td></tr>
+<tr><td>SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.14</td><td class="num">14</td></tr>
+<tr><td>SSH-2.0-Fingerprintx-SSH2</td><td class="num">13</td></tr>
+<tr><td>SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.8</td><td class="num">13</td></tr>
+<tr><td>SSH-2.0-libssh_0.12.0</td><td class="num">12</td></tr>
+<tr><td>SSH-2.0-OPENSSH_7.9</td><td class="num">9</td></tr>
+<tr><td>SSH-2.0-libssh2_1.10.0</td><td class="num">9</td></tr>
+<tr><td>SSH-2.0-paramiko_3.4.1</td><td class="num">8</td></tr>
+<tr><td>MGLNDD_<span class="redacted" lang="tr">[gizlendi]</span>_22</td><td class="num">7</td></tr>
+<tr><td>SSH-2.0-libssh2_1.8.0</td><td class="num">7</td></tr>
+</tbody></table>
+<h2 id="kokenler">Kökenler</h2>
+<p>Bağlanan adreslerin ülkeleri:</p>
+<table>
+<thead><tr><th>Ülke</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>BG</td><td class="num">39.852</td></tr>
+<tr><td>US</td><td class="num">27.395</td></tr>
+<tr><td>RO</td><td class="num">2.042</td></tr>
+<tr><td>BD</td><td class="num">1.586</td></tr>
+<tr><td>TR</td><td class="num">1.441</td></tr>
+<tr><td>IN</td><td class="num">1.116</td></tr>
+<tr><td>VN</td><td class="num">837</td></tr>
+<tr><td>KN</td><td class="num">784</td></tr>
+<tr><td>CN</td><td class="num">633</td></tr>
+<tr><td>DE</td><td class="num">255</td></tr>
+<tr><td>KR</td><td class="num">252</td></tr>
+<tr><td>SG</td><td class="num">203</td></tr>
+<tr><td>IR</td><td class="num">175</td></tr>
+<tr><td>BR</td><td class="num">169</td></tr>
+<tr><td>FR</td><td class="num">139</td></tr>
+<tr><td>MX</td><td class="num">134</td></tr>
+<tr><td>AR</td><td class="num">128</td></tr>
+<tr><td>RU</td><td class="num">121</td></tr>
+<tr><td>GB</td><td class="num">118</td></tr>
+<tr><td>UA</td><td class="num">106</td></tr>
+</tbody></table>
+<p>Otonom sistemler (barındırma sağlayıcıları yaygındır):</p>
+<table>
+<thead><tr><th>ASN</th><th>Ad</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>198364</td><td>BANATSYNC-SRL - BANATSYNC SRL, RO</td><td class="num">65.349</td></tr>
+<tr><td>47890</td><td>UNMANAGED-DEDICATED-SERVERS - UNMANAGED LTD, GB</td><td class="num">1.984</td></tr>
+<tr><td>138145</td><td>WEBHOSTBD-AS-AP - Web Host BD, BD</td><td class="num">1.380</td></tr>
+<tr><td>12735</td><td>ASTurkNet - TurkNet Iletisim Hizmetleri A.S., TR</td><td class="num">982</td></tr>
+<tr><td>138115</td><td>IDNIC-DENEVA-AS-ID - PT Deneva, ID</td><td class="num">970</td></tr>
+<tr><td>402253</td><td>SKN-NETWORK-1 - SKN Subnet &amp; Telecom Ltd, KN</td><td class="num">784</td></tr>
+<tr><td>48090</td><td>DMZHOST - TECHOFF SRV LIMITED, GB</td><td class="num">638</td></tr>
+<tr><td>7602</td><td>SPT-AS-VN - Sai gon Postel Corporation, VN</td><td class="num">486</td></tr>
+<tr><td>154383</td><td>ZWS-AS-AP - ZORNTECH WEB SOLUTIONS, BD</td><td class="num">283</td></tr>
+<tr><td>8075</td><td>MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation, US</td><td class="num">241</td></tr>
+<tr><td>4766</td><td>KIXS-AS-KR-KR - Korea Telecom, KR</td><td class="num">231</td></tr>
+<tr><td>213790</td><td>LimitedNetwork-AS - Limited Network LTD, GB</td><td class="num">212</td></tr>
+<tr><td>396982</td><td>GOOGLE-CLOUD-PLATFORM - Google LLC, US</td><td class="num">176</td></tr>
+<tr><td>14061</td><td>DIGITALOCEAN-ASN - DigitalOcean, LLC, US</td><td class="num">172</td></tr>
+<tr><td>135377</td><td>UCLOUD-HK-AS-AP - UCLOUD INFORMATION TECHNOLOGY (HK) LIMITED, HK</td><td class="num">143</td></tr>
+<tr><td>58224</td><td>TCI - Iran Telecommunication Company PJS, IR</td><td class="num">134</td></tr>
+<tr><td>132203</td><td>TENCENT-NET-AP-CN - Tencent Building, Kejizhongyi Avenue, CN</td><td class="num">131</td></tr>
+<tr><td>215645</td><td>AS209737 - Kayizer Teknoloji Ltd. Sti., TR</td><td class="num">129</td></tr>
+<tr><td>63961</td><td>BDREN-UGC-AS-AP - Bangladesh Research and Education Network (BdREN), BD</td><td class="num">127</td></tr>
+<tr><td>31898</td><td>ORACLE-BMC-31898 - Oracle Corporation, US</td><td class="num">124</td></tr>
+</tbody></table>
+<h2 id="onem-derecesine-gore-alarmlar">Önem derecesine göre alarmlar</h2>
+<table>
+<thead><tr><th>Önem derecesi</th><th>Adet</th></tr></thead>
+<tbody>
+<tr><td>low</td><td class="num">69</td></tr>
+<tr><td>high</td><td class="num">60</td></tr>
+<tr><td>critical</td><td class="num">1</td></tr>
+</tbody></table>
+<p>Alarmlar, Likely veya daha yüksek güven düzeyindeki ciddi kategoriler için üretilir (bkz.
+<a href="intelligence-pipeline.html">kanıt modeli</a>). Bilinen zararsız yoklamalar bastırma kurallarıyla düşürülür
+(<a href="library/docs/decisions/0013-alert-suppression-rules.html">ADR 0013</a>); dolayısıyla sayılar saldırı sayısından çok
+analist iş yükünü yansıtır.</p>
+<p>En gürültülü alarmların arkasındaki belirli saldırı aileleri için <a href="campaigns.html">Kampanyalar</a>; özetler, kaynak
+adresler ve ATT&amp;CK teknikleri için <a href="indicators.html">Göstergeler</a> sayfasına bakın.</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

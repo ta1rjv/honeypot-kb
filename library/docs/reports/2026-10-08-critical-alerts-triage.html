@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report: Triage of the 13 open high-severity alerts - Honeypot Intelligence</title>
+<meta name="description" content="docs/reports/2026-10-08-critical-alerts-triage.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-08-critical-alerts-triage.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-08-critical-alerts-triage.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/reports/2026-10-08-critical-alerts-triage.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-08-critical-alerts-triage.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Home</a><a href="../../../overview.html">Overview</a><a href="../../../architecture.html">Architecture</a><a href="../../../containment.html">Containment</a><a href="../../../attack-landscape.html">Attack landscape</a><a href="../../../campaigns.html">Campaigns</a><a href="../../../indicators.html">Indicators</a><a href="../../../intelligence-pipeline.html">Intelligence pipeline</a><a href="../../../operations-history.html">Operations history</a><a href="../../../decisions.html">Decisions</a><a href="../../../research.html">Research</a><a href="../../../glossary.html">Glossary</a><a href="../../../about.html">About</a><a href="../../index.html" aria-current="page">Library</a></nav>
+<nav class="lang" aria-label="Language"><a href="2026-10-08-critical-alerts-triage.html" hreflang="en" lang="en" aria-current="true">EN</a> | <a href="../../../tr/library/docs/reports/2026-10-08-critical-alerts-triage.html" hreflang="tr" lang="tr">TR</a></nav>
+</div></header>
+<main id="content">
+<div lang="en">
+<h1 id="report-triage-of-the-13-open-high-severity-alerts">Report: Triage of the 13 open high-severity alerts</h1>
+<ul>
+<li>Report date (UTC): 2026-10-08</li>
+<li>Analyst: honeypot-intelligence orchestrator (read-only DB inspection)</li>
+<li>Data source: <code><span class="redacted" lang="en">[redacted]</span></code> (tables <code>alerts</code>,
+  <code>sessions</code>, <code>commands</code>, <code>payloads</code>, <code>ip_intelligence</code>, <code>source_ips</code>) and the
+  captured payload files under the Cowrie downloads directory.</li>
+<li>Evidence level: MEASURED (live production data read on 2026-10-08 15:40Z).</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>The dashboard counter "open critical alerts" showed 13. That counter sums
+unacknowledged alerts of severity <code>critical</code> AND <code>high</code>
+(<code>backend/hpintel/api.py</code>, <code>critical_alerts_open</code>). All 13 are severity <code>high</code>;
+none are true <code>critical</code>. By kind: 8 <code>new_payload</code>, 5
+<code>classification:malware_deployment</code>, across 6 distinct source IPs.</p>
+<p>Triage result:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Alerts</th>
+<th>Source IP(s)</th>
+<th>Nature</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>#4, #5, #6, #7, #10, #11</td>
+<td>195.178.110.232, 92.118.39.50</td>
+<td>Go SSH loader capability probe</td>
+<td>REAL, contained, no real malware delivered</td>
+</tr>
+<tr>
+<td>C</td>
+<td>#8, #9</td>
+<td>130.12.180.51</td>
+<td>SSH propagation worm (key + config drop)</td>
+<td>REAL, highest intelligence value, spread blocked</td>
+</tr>
+<tr>
+<td>D</td>
+<td>#12, #13</td>
+<td>203.57.28.116, 123.139.242.2</td>
+<td>SFTP upload named <code>sshd</code></td>
+<td>REAL, binary NOT captured (collection gap)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="group-b-go-ssh-loader-capability-probe-real-contained-4-5-6-7-10-11">Group B - Go SSH loader capability probe (REAL, contained): #4, #5, #6, #7, #10, #11</h2>
+<p>Sources:
+- 195.178.110.232, AS48090 DMZHOST / TECHOFF SRV LIMITED, geo BG, rDNS NXDOMAIN.
+  42 sessions, 3 successful logins, 2026-10-07 23:07Z..23:59Z.
+- 92.118.39.50, AS47890 UNMANAGED-DEDICATED-SERVERS / UNMANAGED LTD, geo RO,
+  rDNS none. 11 sessions, 2 successful logins, 2026-10-08 12:37Z..13:21Z.</p>
+<p>Both present client <code>SSH-2.0-Go</code> and run the identical command sequence after
+login (root with 123456 / password / 12345678):</p>
+<pre><code>export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+uname=$(uname -s -v -n -m 2&gt;/dev/null || /bin/uname ... || busybox uname ... )
+printf &quot;#!/bin/bash\necho \&quot;xxxxxx\&quot;\n&quot; &gt; filter &amp;&amp; chmod +x filter &amp;&amp; ./filter &amp;&amp; rm -rf filter
+</code></pre>
+<p>This is a loader pre-flight check, not malware: a <code>uname</code> capability probe plus
+a write/chmod/execute/cleanup test that expects the output <code>xxxxxx</code>. The
+<code>classification:malware_deployment</code> alert fires on the <code>chmod +x filter</code> step
+(<code>backend/hpintel/store.py</code>, "file made executable"), but the executed file is a
+trivial echo. No second-stage binary was downloaded; the loader did not proceed
+(likely because the emulated response did not satisfy its check). Alert #4 is
+the <code>filter</code> script itself recorded as <code>new_payload</code>
+(af77b643..., <code>#!/bin/bash\necho "xxxxxx"</code>).</p>
+<p>Both hosters are known abuse-prone bulletproof providers. Risk scoring: each
+active session <code>risk=48</code>. Real automated threat, but low actual impact and
+heavily duplicated (one probe x5).</p>
+<p>Note for the detection layer: <code>malware_deployment</code> at severity <code>high</code> overfires
+on a trivial <code>chmod +x</code> capability probe. See TODO.md.</p>
+<h2 id="group-c-ssh-propagation-worm-real-highest-value-8-9">Group C - SSH propagation worm (REAL, highest value): #8, #9</h2>
+<p>Source 130.12.180.51, AS202412 OMEGATECH-AS / Omegatech LTD (registry ARIN,
+geo US; prefix 130.12.180.0/24 allocated 2025-10-08, i.e. brand new), rDNS
+NXDOMAIN, client <code>SSH-2.0-Go</code>. One session (04bcf4604e47), login admin/admin,
+<code>risk=45</code>, categories include <code>defense_evasion</code>, <code>downloader</code>,
+<code>malware_deployment</code>, <code>reconnaissance</code>. Two files dropped:</p>
+<table>
+<thead>
+<tr>
+<th>Alert</th>
+<th>sha256 (short)</th>
+<th>Path</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8</td>
+<td>00b6f15c2274</td>
+<td>/tmp/sshcfg</td>
+<td><code>StrictHostKeyChecking no</code> + <code>UserKnownHostsFile /dev/null</code></td>
+</tr>
+<tr>
+<td>#9</td>
+<td>43728fbfb98b</td>
+<td>/tmp/key.ppk</td>
+<td>OpenSSH ed25519 PRIVATE key</td>
+</tr>
+</tbody>
+</table>
+<p>Dropped SSH private key fingerprint (IoC; the raw key is intentionally NOT
+stored in this repository):</p>
+<pre><code>SHA256:O/at8341SoPpKvTPvMsJSgjQm30md9VTS2it25sY0vg dlr@sftp (ED25519)
+</code></pre>
+<p>This is the classic SSH worm pattern (dota / outlaw family): the bot drops its
+own private key plus an SSH client config that disables host-key verification,
+so a compromised host can log on to further targets non-interactively and
+spread. This is the most valuable item of the 13: it exposes the worm's
+propagation key and config as reusable IoCs.</p>
+<p>Positive control result: egress is default-deny (ADR 0003), so even though the
+files were staged, the worm could not actually reach any third party from the
+honeypot. Containment worked.</p>
+<h2 id="group-d-sftp-upload-named-sshd-real-collection-gap-12-13">Group D - SFTP upload named <code>sshd</code> (REAL, collection gap): #12, #13</h2>
+<p>Sources (both client <code>SSH-2.0-Go</code>, many credential attempts then one login):
+- 203.57.28.116, AS58519 CHINATELECOM-Ctcloud, geo CN. Session b4941bcc3ed4,
+  root/admin, 2026-10-08 15:03Z.
+- 123.139.242.2, AS4837 CHINA169 / CHINA UNICOM, geo CN. Session e41c17aeeb16,
+  root/admin, 2026-10-08 15:10Z.</p>
+<table>
+<thead>
+<tr>
+<th>Alert</th>
+<th>sha256 (short)</th>
+<th>Filename</th>
+<th>Captured?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#12</td>
+<td>d11d2e36d17d</td>
+<td>sshd</td>
+<td>NO (available=0, size unknown)</td>
+</tr>
+<tr>
+<td>#13</td>
+<td>326eea0221b6</td>
+<td>sshd</td>
+<td>NO (available=0, size unknown)</td>
+</tr>
+</tbody>
+</table>
+<p>A file named <code>sshd</code> uploaded via SFTP is consistent with a trojanized /
+backdoor binary masquerading as the ssh daemon (persistence). The content was
+not retained, so the binary cannot be analysed. This is a known collection gap
+for SFTP uploads; recorded in TODO.md.</p>
+<h2 id="indicators-of-compromise-ioc">Indicators of compromise (IoC)</h2>
+<pre><code>195.178.110.232   AS48090  DMZHOST/TECHOFF (BG)   Go SSH loader capability probe
+92.118.39.50      AS47890  UNMANAGED LTD (RO)     Go SSH loader capability probe
+130.12.180.51     AS202412 Omegatech LTD (US/SC)  SSH worm, key+config drop
+203.57.28.116     AS58519  China Telecom (CN)     SFTP upload &quot;sshd&quot;
+123.139.242.2     AS4837   China Unicom (CN)       SFTP upload &quot;sshd&quot;
+</code></pre>
+<p>Payload sha256 (external):</p>
+<pre><code>af77b643964afd794460d28ab8a11b0ec8790cd5463abfde126613a4f3bccd32  loader &quot;filter&quot; probe
+00b6f15c2274420217ed3098a9f5f00545bf1793d7a324fd18a7809cbbf5b12b  worm sshcfg
+43728fbfb98bb39ff61a2db0fc2905bd6937997062b05b9ab8b186fdee18c09a  worm ed25519 private key
+d11d2e36d17dc323dbafc5e361eb51eb8e0ab078c2f50ec5bc98e5a87190aefb  &quot;sshd&quot; (not captured)
+326eea0221b61a452173e9a56f515dd42b09f5de5f8f868a33e432e4ea18bc3b  &quot;sshd&quot; (not captured)
+</code></pre>
+<p>Dropped SSH key fingerprint: <code>SHA256:O/at8341SoPpKvTPvMsJSgjQm30md9VTS2it25sY0vg</code> (comment <code>dlr@sftp</code>).</p>
+</div>
+</main>
+<footer>Data snapshot: 2026-10-21 | Source commit: bceebd0 | Defensive research; attacker indicators defanged</footer>
+</body>
+</html>

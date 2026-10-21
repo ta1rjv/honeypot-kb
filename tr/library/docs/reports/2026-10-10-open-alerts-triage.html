@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report: Triage of the 62 open high-severity alerts - Honeypot Intelligence</title>
+<meta name="description" content="docs/reports/2026-10-10-open-alerts-triage.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/reports/2026-10-10-open-alerts-triage.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-10-open-alerts-triage.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/reports/2026-10-10-open-alerts-triage.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-10-open-alerts-triage.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Ana sayfa</a><a href="../../../overview.html">Genel bakış</a><a href="../../../architecture.html">Mimari</a><a href="../../../containment.html">Kısıtlama</a><a href="../../../attack-landscape.html">Saldırı manzarası</a><a href="../../../campaigns.html">Kampanyalar</a><a href="../../../indicators.html">Göstergeler</a><a href="../../../intelligence-pipeline.html">İstihbarat hattı</a><a href="../../../operations-history.html">İşletim geçmişi</a><a href="../../../decisions.html">Kararlar</a><a href="../../../research.html">Araştırma</a><a href="../../../glossary.html">Sözlük</a><a href="../../../about.html">Hakkında</a><a href="../../index.html" aria-current="page">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../../../../library/docs/reports/2026-10-10-open-alerts-triage.html" hreflang="en" lang="en">EN</a> | <a href="2026-10-10-open-alerts-triage.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<div lang="en">
+<h1 id="report-triage-of-the-62-open-high-severity-alerts">Report: Triage of the 62 open high-severity alerts</h1>
+<ul>
+<li>Report date (UTC): 2026-10-10</li>
+<li>Analyst: honeypot-intelligence orchestrator (read-only DB and file inspection)</li>
+<li>Data source: <code><span class="redacted" lang="tr">[gizlendi]</span></code> opened read-only
+  (<code>mode=ro</code>), Cowrie downloads under <code>/home/cowrie/var/lib/cowrie/downloads</code>,
+  Cowrie JSON log. No captured file was executed; static inspection only
+  (<code>sha256sum</code>, <code>file</code>, <code>strings</code>, <code>cmp</code>).</li>
+<li>Evidence level: MEASURED (live production data read on 2026-10-10 ~17:30Z).</li>
+<li>Previous triage: docs/reports/2026-10-08-critical-alerts-triage.md (alerts #1-#13).</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>The dashboard counter "open critical/high alerts" showed 62: alert ids #4-#65,
+all severity <code>high</code>, none <code>critical</code>. #4-#13 were already triaged on 2026-10-08
+and left open; #14-#65 (52) are new. Nothing was acknowledged in this session.</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Alerts</th>
+<th>Count</th>
+<th>Nature</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>#4-#7, #10, #11, #14-#18, #20-#26, #28-#65</td>
+<td>56</td>
+<td>Go SSH loader capability probe (<code>filter</code> / <code>xxxxxx</code>)</td>
+<td>REAL, contained, no payload; detection overfire</td>
+</tr>
+<tr>
+<td>C</td>
+<td>#8, #9</td>
+<td>2</td>
+<td>SSH worm key + config drop</td>
+<td>REAL, contained (unchanged since 2026-10-08)</td>
+</tr>
+<tr>
+<td>D</td>
+<td>#12, #13, #19, #27</td>
+<td>4</td>
+<td>SFTP upload <code>sshd</code> = Go SSH brute-force worm with XMRig miner</td>
+<td>REAL, truncated copies captured, contained</td>
+</tr>
+</tbody>
+</table>
+<p>Net: 0 true critical. 52 of the 62 are one identical, harmless pre-flight probe
+repeated by 9 IPs of a single hoster. The only genuinely malicious payload is
+the Group D <code>sshd</code> binary. Containment held: Cowrie and hpintel active,
+<code>cowrie_egress_blocked</code> / <code>egress_blocked</code> drop rules in place, no command in
+any new session reached a second stage.</p>
+<h2 id="group-b-go-ssh-loader-capability-probe-56-alerts">Group B - Go SSH loader capability probe (56 alerts)</h2>
+<p>All 50 new <code>classification:malware_deployment</code> alerts (#14-#18, #20-#26,</p>
+<h2 id="28-65-come-from-sessions-whose-command-sequence-is-byte-identical-one">28-#65) come from sessions whose command sequence is byte-identical (one</h2>
+<p>sha256 over the joined command list) to the 2026-10-08 Group B probe:</p>
+<pre><code>export PATH=...; uname=$(uname -s -v -n -m ... || busybox uname ...)
+printf &quot;#!/bin/bash\necho \&quot;xxxxxx\&quot;\n&quot; &gt; filter &amp;&amp; chmod +x filter &amp;&amp; ./filter &amp;&amp; rm -rf filter
+</code></pre>
+<p>No session from these IPs ran any other command (checked: commands not
+starting with <code>export PATH</code>, <code>printf</code> or <code>#!/bin/bash</code> = none), and none used
+<code>wget</code>/<code>curl</code>/<code>tftp</code>. The loader never proceeded to a second stage.</p>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>Sessions</th>
+<th>Logins</th>
+<th>Window (UTC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>80.94.92.179</td>
+<td>40</td>
+<td>5</td>
+<td>10-08 18:17 .. 10-09 01:47</td>
+</tr>
+<tr>
+<td>80.94.92.55</td>
+<td>55</td>
+<td>7</td>
+<td>10-09 06:44 .. 08:48</td>
+</tr>
+<tr>
+<td>92.118.39.71</td>
+<td>129</td>
+<td>17</td>
+<td>10-08 02:53 .. 10-09 22:11</td>
+</tr>
+<tr>
+<td>92.118.39.49</td>
+<td>66</td>
+<td>6</td>
+<td>10-10 09:13 .. 11:49</td>
+</tr>
+<tr>
+<td>2.57.122.74</td>
+<td>28</td>
+<td>10</td>
+<td>10-09 13:34 .. 14:33</td>
+</tr>
+<tr>
+<td>2.57.122.209</td>
+<td>13</td>
+<td>2</td>
+<td>10-10 04:49 .. 05:36</td>
+</tr>
+<tr>
+<td>193.32.162.84</td>
+<td>35</td>
+<td>3</td>
+<td>10-09 22:08 .. 22:56</td>
+</tr>
+</tbody>
+</table>
+<p>All seven (and 92.118.39.50 from 2026-10-08) are AS47890
+UNMANAGED-DEDICATED-SERVERS / UNMANAGED LTD (geo RO), client <code>SSH-2.0-Go</code>,
+weak root/admin passwords (123456, 12345678, password, P@ssw0rd, root123,
+admin, 1qaz2wsx), <code>risk=48</code>. One botnet rotating through its own address space.</p>
+<p>Cause of the alert volume: the <code>malware_deployment</code> rule fires on
+<code>chmod +x filter</code> ("file made executable") at severity <code>high</code>, and the alert
+dedup key is per session, so every repeated probe raises a new alert. This is
+the overfire already noted in TODO.md; it now accounts for 90% of open alerts.</p>
+<h2 id="group-c-ssh-worm-key-config-drop-8-9">Group C - SSH worm key + config drop (#8, #9)</h2>
+<p>Unchanged verdict (see 2026-10-08 report). New observation: 130.12.180.51
+returned four more times (sessions 8b2a6ada6f75, 6ffbc219ac01, 7e036159f336,
+05b93eb357e5; 10-08 18:27Z .. 10-10 15:37Z), login admin/admin, same one-line
+key-drop command. No new alerts because the payload hashes are deduplicated.
+Egress stayed blocked.</p>
+<h2 id="group-d-sftp-sshd-go-ssh-worm-with-xmrig-miner-12-13-19-27">Group D - SFTP <code>sshd</code> = Go SSH worm with XMRig miner (#12, #13, #19, #27)</h2>
+<table>
+<thead>
+<tr>
+<th>Alert</th>
+<th>Source IP (ASN)</th>
+<th>sha256 (short)</th>
+<th>Bytes on disk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#12</td>
+<td>203.57.28.116 (AS58519 China Telecom)</td>
+<td>d11d2e36d17d</td>
+<td>11010048</td>
+</tr>
+<tr>
+<td>#13</td>
+<td>123.139.242.2 (AS4837 China Unicom)</td>
+<td>326eea0221b6</td>
+<td>20971520</td>
+</tr>
+<tr>
+<td>#19</td>
+<td>183.71.242.250 (AS4134 Chinanet)</td>
+<td>d7f98e379c40</td>
+<td>65536</td>
+</tr>
+<tr>
+<td>#27</td>
+<td>218.94.16.158 (AS4134 Chinanet)</td>
+<td>64689ec4b795</td>
+<td>9273344</td>
+</tr>
+</tbody>
+</table>
+<p>The Cowrie log shows the same upload from two more sources without a new alert
+(hash dedup): 221.10.42.66 and 118.187.8.10 (both -&gt; 326eea02...).</p>
+<p>Findings (static):
+- All four files are byte-identical prefixes of ONE binary (<code>cmp -n</code> against
+  the shortest copy). The four different hashes are an artifact of truncation,
+  not four samples.
+- None is complete: the ELF header points to section headers at offset
+  30304408, so the full binary is &gt; 29 MB. Cowrie <code>download_limit_size =
+  20971520</code> caps uploads at 20 MiB (#13 hit it exactly); the others ended when
+  the session dropped (~301 s, "Connection lost").
+- Type: ELF 64-bit x86-64, Go, dynamically linked.
+- Capability indicators (strings): <code>main.credential</code>, <code>attackqueue
+  *[]main.credential</code>, <code>github.com/pkg/sftp</code>, <code>github.com/msteinert/pam</code>,
+  <code>github.com/shirou/gopsutil</code>, <code>main._rig_config</code> with <code>Xmrig_enabled</code>,
+  <code>Xmrig_algo</code>, <code>Xmrig_poolAddr</code>, <code>Xmrig_poolUser</code>, <code>Xmrig_poolPass</code>,
+  <code>Xmrig_nicehash</code>, <code>main._update</code>, public-IP lookups (api.ipify.org,
+  ipinfo.io, ip.seeip.org, ipgrab.io, checkip.amazonaws.com), discord.com,
+  <code>0.0.0.0:2210</code>.
+- Assessment (MEDIUM confidence, string-based, not executed): a self-spreading
+  SSH brute-force bot that uploads itself as <code>sshd</code> over SFTP, carries an XMRig
+  mining configuration, a PAM module reference (possible credential capture)
+  and a Discord channel (likely reporting). Pool address and wallet were not
+  found in the captured prefix. Family name UNKNOWN (no hash lookup done).</p>
+<p>Impact on the honeypot: none. The file was only written by Cowrie's emulated
+SFTP; it was never executed, and the attacker sessions ran 0 commands.</p>
+<p>Collection gaps found:
+1. Collector does not mark SFTP uploads as available (<code>available=0</code>,
+   <code>size=NULL</code>, <code>stored_path=NULL</code>) although the file exists - DB/dashboard
+   understate the captured evidence.
+2. <code>download_limit_size</code> (20 MiB) truncates this &gt; 29 MB sample; a complete copy
+   would need a higher limit.</p>
+<h2 id="indicators-of-compromise-new-since-2026-10-08">Indicators of compromise (new since 2026-10-08)</h2>
+<pre><code>80.94.92.179  80.94.92.55  92.118.39.71  92.118.39.49   AS47890  Go loader probe
+2.57.122.74   2.57.122.209  193.32.162.84                AS47890  Go loader probe
+183.71.242.250  218.94.16.158                            AS4134   SFTP sshd miner-worm
+221.10.42.66  118.187.8.10                               (log)    SFTP sshd miner-worm
+</code></pre>
+<p>Prefix hashes of the <code>sshd</code> sample (truncated, use for exact-match only):
+d11d2e36d17dc323dbafc5e361eb51eb8e0ab078c2f50ec5bc98e5a87190aefb,
+326eea0221b61a452173e9a56f515dd42b09f5de5f8f868a33e432e4ea18bc3b,
+d7f98e379c400c13340781ccb65017c000330824ea26680866b9d3e43d641721,
+64689ec4b7958fb18d8e5522284ac3d586007dc64ae03ce6c46bf9297f94a960.</p>
+</div>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

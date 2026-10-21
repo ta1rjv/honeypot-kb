@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0010: Keep all captured logs for research (effectively unlimited retention) - Honeypot Intelligence</title>
+<meta name="description" content="docs/decisions/0010-keep-all-logs-for-research.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0010-keep-all-logs-for-research.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0010-keep-all-logs-for-research.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/decisions/0010-keep-all-logs-for-research.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0010-keep-all-logs-for-research.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Home</a><a href="../../../overview.html">Overview</a><a href="../../../architecture.html">Architecture</a><a href="../../../containment.html">Containment</a><a href="../../../attack-landscape.html">Attack landscape</a><a href="../../../campaigns.html">Campaigns</a><a href="../../../indicators.html">Indicators</a><a href="../../../intelligence-pipeline.html">Intelligence pipeline</a><a href="../../../operations-history.html">Operations history</a><a href="../../../decisions.html">Decisions</a><a href="../../../research.html">Research</a><a href="../../../glossary.html">Glossary</a><a href="../../../about.html">About</a><a href="../../index.html" aria-current="page">Library</a></nav>
+<nav class="lang" aria-label="Language"><a href="0010-keep-all-logs-for-research.html" hreflang="en" lang="en" aria-current="true">EN</a> | <a href="../../../tr/library/docs/decisions/0010-keep-all-logs-for-research.html" hreflang="tr" lang="tr">TR</a></nav>
+</div></header>
+<main id="content">
+<div lang="en">
+<h1 id="adr-0010-keep-all-captured-logs-for-research-effectively-unlimited-retention">ADR 0010: Keep all captured logs for research (effectively unlimited retention)</h1>
+<p>Status: accepted (2026-10-08)</p>
+<p>Context: honeypot-intelligence is an attack-intelligence research platform. The
+owner uses the captured data in scientific research and evaluations, where
+losing older sessions, events, payloads or raw Cowrie logs to automatic pruning
+would damage the dataset. The defaults prune data on two independent paths:</p>
+<ol>
+<li>Database rows: <code>HPINTEL_RETENTION_*_DAYS</code> (events 180, sessions 365,
+   network 180, payloads 365) applied by <code>backend/hpintel/housekeeping.py</code>.</li>
+<li>Raw Cowrie files on disk: <code>cowrie-retention.service</code> (daily timer) deletes
+   rotated JSON logs older than 30 days, TTY recordings older than 180 days and
+   downloads older than 365 days.</li>
+</ol>
+<p><code>HPINTEL_RETENTION_*_DAYS</code> has a minimum of 1 (0 or a disable sentinel is not
+supported), so "keep everything" is expressed as a very large number.</p>
+<p>Decision: retain all captured data effectively forever on both paths.</p>
+<ol>
+<li>Set every <code>HPINTEL_RETENTION_*_DAYS</code> to 36500 (about 100 years) in the
+   production env file and in <code>deployment/config/hpintel.env.example</code>.</li>
+<li>Set every <code>cowrie-retention.service</code> window (<code>find -mtime +N</code>) to 36500 in
+   the unit header and all three <code>ExecStart</code> lines, in
+   <code>deployment/systemd/cowrie-retention.service</code>. The timer stays enabled so the
+   mechanism remains in place and auditable; it simply never matches a file.</li>
+<li>Keep the disk-usage alerts active and unchanged (<code>HPINTEL_DISK_WARN_PERCENT</code>
+   85, <code>HPINTEL_DISK_CRITICAL_PERCENT</code> 95). Unlimited retention trades disk for
+   completeness, so the operator must still be warned before the disk fills
+   (THREAT_MODEL.md T11).</li>
+</ol>
+<p>Consequences:
+- No research data is lost to automatic pruning.
+- Disk grows without bound; the operator monitors the disk alerts and plans
+  capacity or archival. The disk horizon is long, but capacity is now an operator responsibility.
+- Operators who want bounded retention lower these numbers; the mechanism and
+  its validation are unchanged.
+- Applying this to an already-running host requires editing the live env file
+  and the live unit, then <code>systemctl daemon-reload</code> and restarting
+  <code>hpintel.service</code> (see docs/OPERATIONS.md, "Keep all logs").</p>
+</div>
+</main>
+<footer>Data snapshot: 2026-10-21 | Source commit: bceebd0 | Defensive research; attacker indicators defanged</footer>
+</body>
+</html>

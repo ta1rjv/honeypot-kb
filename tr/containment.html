@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kısıtlama (Containment) - Honeypot Intelligence</title>
+<meta name="description" content="Varsayılan olarak her şeyi engelleyen çıkış, uid tabanlı kurallar ve watchdog honeypot&#x27;un kimseye zarar vermesini nasıl önler; doğrulanmış kanıtlarla.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/containment.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/containment.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/containment.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/containment.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html" aria-current="page">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../containment.html" hreflang="en" lang="en">EN</a> | <a href="containment.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>Kısıtlama (Containment)</h1>
+<p>İlke: <strong>gerçekçilik hiçbir zaman kısıtlamanın önüne geçmez.</strong> Ele geçirilmiş veya kötüye kullanılmış bir honeypot,
+üçüncü taraflara tarama, saldırı, röle veya spam yapmamalı ve yönetim düzlemine ulaşmamalıdır. Kaynaklar:
+<a href="library/THREAT_MODEL.html">tehdit modeli</a> ve projenin sızma testi (yayımlanmaz).</p>
+<h2 id="kontroller">Kontroller</h2>
+<table>
+<thead>
+<tr>
+<th>Kontrol</th>
+<th>Ne yapar</th>
+<th>Referans</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Varsayılan olarak her şeyi engelleyen çıkış</td>
+<td>nftables output politikası drop; forward politikası drop; <code>ip_forward</code> 0.</td>
+<td><a href="library/docs/decisions/0003-containment-by-uid.html">ADR 0003</a></td>
+</tr>
+<tr>
+<td>Kullanıcı kimliğine göre kısıtlama</td>
+<td>Honeypot kullanıcısının her yeni bağlantısı, loopback dahil, herhangi bir accept kuralından önce düşürülür. Saldırgan indirmeleri bu yüzden tasarım gereği başarısız olur; başarısız deneme ve ağ niyeti olarak kaydedilir.</td>
+<td>ADR 0003</td>
+</tr>
+<tr>
+<td>Tünel yok</td>
+<td>Cowrie'de SSH yönlendirme kapalıdır; direct-tcpip kanalları reddedilir.</td>
+<td>Sızma testi</td>
+</tr>
+<tr>
+<td>Ayrıcalıksız servisler</td>
+<td>Cowrie yalnızca tcp/22'ye bağlanma capability'sine sahiptir; arka uçta hiç capability yoktur. Her birime systemd sıkılaştırması uygulanır.</td>
+<td><a href="library/docs/decisions/0002-direct-port-22-binding.html">ADR 0002</a></td>
+</tr>
+<tr>
+<td>Dar, isteğe bağlı çıkış</td>
+<td>Alarm kanalları ve (planlanan) itibar sorguları, arka uç kullanıcısı için ayrı ve açık bir kural gerektirir: tek adres ve port, asla honeypot kullanıcısı için değil. Anahtarlar yoksa kural kümesi varsayılanla bayt bayt aynıdır.</td>
+<td>ADR 0011, 0015, 0018</td>
+</tr>
+<tr>
+<td>Erişilebilirlik bekçisi (watchdog)</td>
+<td>Bir bekçi, honeypot yanıt vermeyi bırakırsa onu yeniden başlatır.</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>Yönetim düzlemi</td>
+<td>Yönetim erişimi kısıtlanmıştır; panel yalnızca loopback'te dinler ve kimlik doğrulamalı bir tünelle erişilir.</td>
+<td>Mimari</td>
+</tr>
+</tbody>
+</table>
+<h2 id="canl-kstlama-sayaclar">Canlı kısıtlama sayaçları</h2>
+<table>
+<thead>
+<tr>
+<th>Sayaç</th>
+<th>Değer (anlık görüntü 2026-10-21)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Çıkış politikasıyla düşürülen paket</td>
+<td>28</td>
+</tr>
+<tr>
+<td>Cowrie yeniden başlatma sayısı</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Çıkış sayacı, varsayılan reddetme politikasının engellediği, ana makinedeki diğer süreçlerin zararsız trafiğini de
+içerir. 2026-10-15 triyaj raporu sayaçları ayırır: yalnızca honeypot kullanıcısına ait sayaç, 2026-10-11'den beri
+değişmeden 6 pakette kalmıştır (MEASURED). Daha büyük sayaç
+ise ana makinenin zamanlanmış sistem işlerinin reddedilmesiyle açıklanmıştır.</p>
+<h2 id="dogrulanms-kantlar">Doğrulanmış kanıtlar</h2>
+<table>
+<thead>
+<tr>
+<th>İddia</th>
+<th>Kanıt</th>
+<th>Düzey</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hapishaneden (jail) kaçış yok, üçüncü taraflara röle veya proxy yok, yönetim düzlemine erişim yok, panelde kimlik doğrulama atlatma yok, veri sızıntısı yok</td>
+<td>0.3.0 üretim sürümüne karşı 2026-10-07'de yapılan yetkili agresif sızma testi (kara kutu saldırılar ve honeypot kullanıcısı olarak beyaz kutu yoklamalar)</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>Honeypot kullanıcısından TCP, UDP, ICMP, DNS, kaynak port hileleri, ham soketler ve loopback başarısız olur</td>
+<td>Aynı test; düşürme sayaçları arttı</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>Honeypot üzerinden SSH yerel, dinamik ve uzak yönlendirme, sıfır giden paketle reddedilir</td>
+<td>Aynı test</td>
+<td>VALIDATED</td>
+</tr>
+<tr>
+<td>Honeypot üzerinden yayılmaya çalışan gerçek bir solucan hiçbir üçüncü tarafa ulaşamadı</td>
+<td><a href="campaigns.html">Kampanyalar</a> sayfasında Grup C, 2026-10-08'de gözlendi</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>Her üretim yükseltmesinde kısıtlama değişmedi (kural kümesi özeti öncesi ve sonrası eşit)</td>
+<td>0.3.1'den 0.5.1'e her üretim yükseltmesinde kural kümesi özeti karşılaştırması kaydedildi (raporlar yayımlanmaz)</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>Sahte kabuk yazmaları gerçek dosya sistemine ulaşmaz; SFTP/SCP yüklemeleri yalnızca yalıtılmış, içeriğe göre adreslenen bir dizine düşer</td>
+<td>Aynı test</td>
+<td>VALIDATED</td>
+</tr>
+</tbody>
+</table>
+<h2 id="erisilebilirlik">Erişilebilirlik</h2>
+<p>Aynı test honeypot'un kendisine ait bir erişilebilirlik sorunu buldu; bu ne ana makine ele geçirilmesi ne de kısıtlama
+ihlalidir. 0.3.1 sürümü bir erişilebilirlik bekçisi ekledi: bekçi, honeypot yanıt vermeyi bırakırsa onu yeniden
+başlatır (tek kullanımlık bir test VM'inde VALIDATED, 2026-10-11).</p>
+<h2 id="kalan-riskler">Kalan riskler</h2>
+<p>Yetenekli bir saldırgan makinenin bir emülasyon olduğunu anlayabilir (orta etkileşimli honeypot'ların kabul edilmiş
+riski; bkz. tehdit modeli ve <a href="research.html">Araştırma</a>). Yeniden başlatma: üretim ana makinesinin yeniden başlatılması 2026-10-10'da (18:38 UTC) 0.2.x/0.3.0 sürümüyle
+VALIDATED'dir; 0.3.1 ve sonrası sürümlerle üretimde yeniden başlatma NOT RUN'dır. Senaryo tabanlı yeniden başlatmalar
+(kurulum ve yükseltme sonrası durum kalıcılığı) tek kullanımlık VM'lerde VALIDATED'dir. IPv6 davranışı UNKNOWN'dır
+(ana makinede IPv6 yoktur).</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

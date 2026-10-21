@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0015: Telegram and SMTP notification receivers - Honeypot Intelligence</title>
+<meta name="description" content="docs/decisions/0015-telegram-and-smtp-receivers.md">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/decisions/0015-telegram-and-smtp-receivers.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0015-telegram-and-smtp-receivers.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/library/docs/decisions/0015-telegram-and-smtp-receivers.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/library/docs/decisions/0015-telegram-and-smtp-receivers.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="../../../index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="../../../index.html">Ana sayfa</a><a href="../../../overview.html">Genel bakış</a><a href="../../../architecture.html">Mimari</a><a href="../../../containment.html">Kısıtlama</a><a href="../../../attack-landscape.html">Saldırı manzarası</a><a href="../../../campaigns.html">Kampanyalar</a><a href="../../../indicators.html">Göstergeler</a><a href="../../../intelligence-pipeline.html">İstihbarat hattı</a><a href="../../../operations-history.html">İşletim geçmişi</a><a href="../../../decisions.html">Kararlar</a><a href="../../../research.html">Araştırma</a><a href="../../../glossary.html">Sözlük</a><a href="../../../about.html">Hakkında</a><a href="../../index.html" aria-current="page">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../../../../library/docs/decisions/0015-telegram-and-smtp-receivers.html" hreflang="en" lang="en">EN</a> | <a href="0015-telegram-and-smtp-receivers.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<p class="notice">Bu belge yalnızca İngilizce mevcuttur.</p>
+<div lang="en">
+<h1 id="adr-0015-telegram-and-smtp-notification-receivers">ADR 0015: Telegram and SMTP notification receivers</h1>
+<p>Status: accepted (2026-10-15). Supersedes point 6 ("SMTP is deferred") of ADR 0011.
+Implementation: backend and dashboard IMPLEMENTED on wip/0.5.0, tested against local fakes only
+(no real Telegram or SMTP server contacted); the firewall part (renderer, setup.sh, wizard, nft golden
+files, setup.conf keys) is IMPLEMENTED on wip/0.5.0 and tested without a VM; VM validation NOT VERIFIED.</p>
+<p>Context: ADR 0011 added one opt-in channel, a signed webhook, and deferred mail. Operators also
+want a chat message and a mail without running a gateway, and a daily summary of the alerts that
+stay below the immediate threshold. The containment rules of ADR 0003 and ADR 0011 do not change:
+every new channel needs its own explicit egress rule for the backend uid <code>hpintel</code>, and nothing
+an attacker controls may choose the destination.</p>
+<p>Decision:</p>
+<ol>
+<li>Generalise <code>backend/hpintel/notify.py</code> minimally. A <code>Channel</code> descriptor (name, enabled,
+   minimum severity, rate limit, log target, transport preparation, send function, optional
+   digest) is processed by the existing machinery: candidate selection in severity order,
+   persisted high-water mark per channel (<code>alert_delivery_cursors</code>), one <code>alert_deliveries</code> row
+   per (alert, channel), 3 attempts with 1 minute and 5 minutes backoff, rate limit, batch limit, 15
+   minute backlog grace. Channel names are <code>webhook</code>, <code>telegram</code>, <code>email</code> (<code>String(16)</code>, no
+   schema change). Webhook behaviour is unchanged and its tests run unchanged. Suppressed alerts
+   are never delivered on any channel (they are not <code>alerts</code> rows, ADR 0013); a demoted alert is
+   judged by its demoted severity.</li>
+<li>Telegram: <code>POST https://api.telegram.org/bot&lt;TOKEN&gt;/sendMessage</code> with JSON <code>{chat_id, text}</code>;
+   <code>parse_mode</code> is never set. The text is built from the same fields as the webhook, each clipped
+   to 512 characters, as printable ASCII, at most 4000 characters (Telegram allows 4096). HTTP
+   200 with <code>"ok": false</code> is a failure; HTTP 429 pauses the whole channel for <code>retry_after</code>
+   seconds (bounded to 1 h; the pause is in memory, a restart simply meets the 429 again). The
+   token is part of the URL path: it is never logged, stored, returned or put in an error row;
+   only <code>https://api.telegram.org:443</code> is logged and returned. Same hardened opener as the
+   webhook (TLS verification on, no redirects, no proxies, per-operation and overall deadlines).
+   Optional <code>HPINTEL_TELEGRAM_CONNECT_IP</code> connects to one literal IP while the TLS server name and
+   certificate verification stay <code>api.telegram.org</code>, so the firewall rule can name one address.</li>
+<li>SMTP: stdlib <code>smtplib</code> subclasses on the same deadline sockets (5 s per operation, 20 s per
+   delivery). Modes <code>starttls</code> (587, default) and <code>tls</code> (465); plaintext is refused by
+   configuration and at run time (a server that does not offer STARTTLS fails the attempt before
+   AUTH or MAIL). Certificate and host name are always verified (optional CA file replaces the
+   trust store). Login only when user and password are set, and only after TLS. Messages are
+   <code>email.message.EmailMessage</code> with an ASCII body; the subject holds only controlled fields
+   (severity from the fixed scale, the kind if it matches a fixed character pattern else <code>other</code>,
+   a validated source IP), CR and LF are stripped from every header value, and at most 5 plain
+   recipient addresses are accepted. Error reasons come from exception types and SMTP reply
+   codes, never from server text. If the server refuses some but not all recipients, the delivery
+   still counts as successful (a retry would send duplicates to the accepted recipients); a WARNING
+   <code>SMTP server refused N of M recipients</code> logs the count only, never the addresses. If every
+   recipient is refused the attempt fails as before.</li>
+<li>Per channel <code>*_MIN_SEVERITY</code> (default <code>high</code>) and <code>*_MAX_PER_MIN</code> (Telegram 20, e-mail 6).</li>
+<li>Digest per channel (Telegram, e-mail; none for the webhook) every <code>*_DIGEST_HOURS</code> (default
+   24, 0 = off): the alerts below the channel threshold by severity and kind, the top 5 source
+   IPs, and the number of suppressed alerts of the interval; nothing is sent when the interval is
+   empty. It contains only counts, severities, validated kinds and validated IPs. State is the
+   new table <code>notification_digests</code> (migration 13: <code>channel</code>, <code>last_alert_id</code>,
+   <code>last_suppressed_id</code>, <code>last_sent_at</code>), so a restart never repeats a digest; the first pass of
+   a channel only records the current ids. A failed digest is retried 3 times 5 minutes apart and
+   then skipped for that interval.</li>
+<li>Configuration (<code>hpintel.env</code>, validated at start and by <code>check-config</code>, errors never echo a
+   value): <code>HPINTEL_TELEGRAM_BOT_TOKEN</code> and <code>_CHAT_ID</code> are an all-or-nothing group; the SMTP
+   <code>_HOST</code>, <code>_FROM</code>, <code>_TO</code> are one group and <code>_USER</code>, <code>_PASSWORD</code> another; bounded lengths and
+   numbers. Secrets live only in <code>hpintel.env</code>.</li>
+<li><code>GET /api/system/notifications</code> keeps its webhook keys and adds <code>channels.telegram</code> and
+   <code>channels.email</code> (enabled, target host only, minimum severity, last success, last error
+   sanitised, sent and failed in 24 h). The Health page shows each channel.</li>
+</ol>
+<p>Consequences:</p>
+<ul>
+<li>Firewall part (IMPLEMENTED, not VM-validated): <code>HP_TELEGRAM_DEST4</code>/<code>HP_TELEGRAM_PORT</code> and
+  <code>HP_SMTP_DEST4</code>/<code>HP_SMTP_PORT</code> (both or neither per pair, one IPv4 address and port, same
+  constraints as the webhook rule) each render one rule for uid <code>hpintel</code> after the uid <code>cowrie</code>
+  drop (order: webhook, Telegram, SMTP, backup); without them a contained host cannot deliver and
+  deliveries fail with <code>timeout</code>. <code>setup.sh</code> needs the <code>hpintel</code> user, warns when <code>hpintel.env</code>
+  disagrees with the keys, and the wizard never asks for the token or the SMTP password.</li>
+<li>Telegram needs an IP the operator pins (<code>HPINTEL_TELEGRAM_CONNECT_IP</code>) or a DNS answer that
+  matches the firewall rule; api.telegram.org addresses can change.</li>
+<li>A compromised backend can send the same alert data to the configured chat and relay (accepted
+  residual risk, as for the webhook); the bot token and SMTP password are readable by the
+  <code>hpintel</code> user through <code>hpintel.env</code>.</li>
+<li>Alert text from attackers reaches a chat and a mailbox. Plain text only (no <code>parse_mode</code>), no
+  attacker text in mail subjects or headers, but clients may linkify URLs in the body.</li>
+<li>The 429 pause and the digest retry counters are in memory.</li>
+</ul>
+<p>Alternatives considered: a mail library or Telegram client library (more attack surface than the
+standard library); <code>parse_mode</code> MarkdownV2 or HTML (escaping errors would let alert text alter
+messages); plaintext SMTP or opportunistic STARTTLS (downgradable); a digest computed from
+timestamps instead of id cursors (restart repeats or gaps); one shared rate limit for all channels
+(one failing receiver would starve the others).</p>
+</div>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>

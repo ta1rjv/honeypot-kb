@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İstihbarat Hattı - Honeypot Intelligence</title>
+<meta name="description" content="Ham honeypot olaylarının sınıflandırılmış, kanıta dayalı istihbarata dönüşümü - zenginleştirme kaynakları, güven modeli, MITRE eşlemesi ve planlanan itibar sorguları.">
+<link rel="canonical" href="https://ta1rjv.github.io/honeypot-kb/tr/intelligence-pipeline.html">
+<link rel="alternate" hreflang="en" href="https://ta1rjv.github.io/honeypot-kb/intelligence-pipeline.html">
+<link rel="alternate" hreflang="tr" href="https://ta1rjv.github.io/honeypot-kb/tr/intelligence-pipeline.html">
+<link rel="alternate" hreflang="x-default" href="https://ta1rjv.github.io/honeypot-kb/intelligence-pipeline.html">
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--fg:#1c2128;--muted:#59636e;--card:#fff;--line:#d0d7de;--accent:#0b5cad;--bar:#2f81c4;--warn:#fff4ce;--warnfg:#4a3b00}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--fg:#e6edf3;--muted:#9aa7b4;--card:#161c24;--line:#2b3440;--accent:#6cb2f0;--bar:#4a9be0;--warn:#3a3000;--warnfg:#ffe9a0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:4px 8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:62rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:.2rem 1rem;flex:1}
+nav.main a{text-decoration:none;color:var(--muted)}
+nav.main a[aria-current]{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent)}
+.lang{font-weight:600;white-space:nowrap}
+.lang a{text-decoration:none;color:var(--muted)}
+.lang a[aria-current]{color:var(--fg);border-bottom:2px solid var(--accent)}
+main{max-width:62rem;margin:0 auto;padding:1rem}
+.banner{background:var(--warn);color:var(--warnfg);padding:.5rem 1rem;text-align:center}
+.notice{border-left:4px solid var(--accent);background:var(--card);padding:.5rem 1rem;margin:0 0 1rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:.3rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--card)}td.num{text-align:right;font-variant-numeric:tabular-nums}
+td code,pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+td{word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);padding:.7rem;overflow-x:auto}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+span.redacted{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 .3em;color:var(--muted);font-style:italic;font-size:.9em;white-space:nowrap}
+svg.chart{width:100%;height:auto;max-width:48rem}
+svg.chart .b{fill:var(--bar)}svg.chart text{fill:var(--muted);font-size:11px}
+footer{max-width:62rem;margin:2rem auto;padding:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+@media (max-width:40rem){body{font-size:15px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">İçeriğe geç</a>
+
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">Honeypot Intelligence</a>
+<nav class="main" aria-label="Main"><a href="index.html">Ana sayfa</a><a href="overview.html">Genel bakış</a><a href="architecture.html">Mimari</a><a href="containment.html">Kısıtlama</a><a href="attack-landscape.html">Saldırı manzarası</a><a href="campaigns.html">Kampanyalar</a><a href="indicators.html">Göstergeler</a><a href="intelligence-pipeline.html" aria-current="page">İstihbarat hattı</a><a href="operations-history.html">İşletim geçmişi</a><a href="decisions.html">Kararlar</a><a href="research.html">Araştırma</a><a href="glossary.html">Sözlük</a><a href="about.html">Hakkında</a><a href="library/index.html">Kütüphane</a></nav>
+<nav class="lang" aria-label="Dil"><a href="../intelligence-pipeline.html" hreflang="en" lang="en">EN</a> | <a href="intelligence-pipeline.html" hreflang="tr" lang="tr" aria-current="true">TR</a></nav>
+</div></header>
+<main id="content">
+<h1>İstihbarat Hattı</h1>
+<p>Ham Cowrie olayları dört adımda istihbarata dönüşür: normalize et, türet, sınıflandır, zenginleştir. Türetilen her
+bilgi nereden geldiğini söyler.</p>
+<h2 id="1-normalize-et-ve-turet">1. Normalize et ve türet</h2>
+<p>Collector ve normalizer her olaya kararlı bir sınıflandırma ve deterministik bir kimlik verir. Komut ayrıştırıcı
+sonra yazılan komut satırından emüle süreçleri, dosya işlemlerini ve ağ niyetlerini türetir. Türetilmiş satırlar
+<code>evidence="derived"</code> taşır; doğrudan Cowrie'den okunan satırlar <code>observed</code> taşır. <code>wget</code> veya <code>curl</code> kaynaklı ağ
+niyetlerinin durumu <code>attempted</code>'dır ve gerçek bir bağlantı kurulduğu anlamına asla gelmez.</p>
+<h2 id="2-kant-ve-guven-modeli">2. Kanıt ve güven modeli</h2>
+<p><a href="library/docs/decisions/0008-evidence-confidence-model.html">ADR 0008</a> (kabul 2026-10-06, IMPLEMENTED):</p>
+<table>
+<thead>
+<tr>
+<th>Güven</th>
+<th>Anlamı</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Suspected</td>
+<td>Zayıf veya tek bir gösterge.</td>
+</tr>
+<tr>
+<td>Likely</td>
+<td>Birkaç tutarlı gösterge veya doğrulanmamış güçlü bir gösterge.</td>
+</tr>
+<tr>
+<td>Observed</td>
+<td>Davranışın kendisi kaydedilen oturumda görüldü.</td>
+</tr>
+<tr>
+<td>Confirmed</td>
+<td>Yakalanan bir payload'ın aynı oturumda çalıştırılmasını gerektirir.</td>
+</tr>
+</tbody>
+</table>
+<p>Sözlük sıralıdır: Suspected &lt; Likely &lt; Observed &lt; Confirmed (tanımlar <a href="library/DATA_MODEL.html">DATA_MODEL.md</a>
+içindedir). Teknikler gözlemin güvenini, kategoriler niyetin güvenini kaydeder. Ciddi kategoriler için alarm en az
+Likely gerektirir ve her sınıflandırma kanıt dizgilerini ve olay kimliklerini listeler; böylece analist bir kararı
+her zaman ham olaylara kadar izleyebilir.</p>
+<h2 id="3-mitre-attck-eslemesi">3. MITRE ATT&amp;CK eşlemesi</h2>
+<p>Tespit kuralları ve komut ayrıştırıcı davranışı tekniklere eşler; örneğin T1082 sistem bilgisi keşfi, T1105 araç
+aktarımı (ingress tool transfer), T1059.004 Unix kabuğu, T1222.002 dosya izni değiştirme, T1098.004 SSH
+authorized keys, T1070 gösterge silme ve T1496 kaynak kaçırma. Botlar bağlantı başına tek deneme yaptığından,
+kaynak başına kimlik bilgisi teknikleri (T1110.001 tahmin, T1110.003 püskürtme) oturum başına değil bir
+housekeeping işiyle toplulaştırılır. Eşikler <a href="library/docs/ASSUMPTIONS.html">varsayımlar kaydında</a> belgelenmiş
+varsayımlardır. Bir kural değişikliğinden sonra saklı oturumlar için teknik satırları yeniden türetilebilir
+(<code>redetect-techniques</code>); bu işlem 2026-10-16'da üretimde bir kez yapıldı ve alarm sayısını değiştirmedi (MEASURED).
+Canlı teknik tablosu <a href="indicators.html">Göstergeler</a> sayfasındadır.</p>
+<h2 id="4-ip-istihbarat-uretimde">4. IP istihbaratı (üretimde)</h2>
+<p><a href="library/docs/decisions/0007-ip-intelligence-sources.html">ADR 0007</a> (kabul 2026-10-06, IMPLEMENTED):</p>
+<ul>
+<li>DNS üzerinden Team Cymru IP-ASN verisi: ASN, önek, ülke, kayıt otoritesi, AS adı. API anahtarı yok.</li>
+<li>Ters DNS, açılıp kapatılabilir; çünkü PTR sorguları saldırganların kontrol ettiği ad sunucularına ulaşır.</li>
+<li>Şehir ve koordinatlar için operatörün sağladığı isteğe bağlı yerel MaxMind biçimli veritabanı.</li>
+<li>Sonuçlar "harici istihbarat" olarak etiketlenir ve asla kimlik olarak ele alınmaz.</li>
+</ul>
+<h2 id="5-payload-analizi">5. Payload analizi</h2>
+<p>Yüklenen dosyalar SHA256 ile özetlenir, sihirli baytlarla türlendirilir, ölçülür (boyut, entropi) ve URL'ler, IP'ler
+ve kabuk anahtar sözcükleri öne alınarak yazdırılabilir dizgiler taranır. ELF üst bilgileri ayrıştırılır. Aynı baş
+özetini paylaşan dosyalar, tek bir ikili dosyanın kesik kopyalarını bulmak için bayt bayt doğrulanır. Dosyalar
+yalnızca okunur: asla çalıştırılmaz, API tarafından sunulmaz, kaynak denetimine eklenmez.</p>
+<h2 id="6-alarm-is-aks">6. Alarm iş akışı</h2>
+<p>Alarmların önem dereceleri vardır; aranabilir, toplu onaylanabilir ve not eklenebilir; bilinen gürültü bastırma
+kurallarıyla düşürülebilir veya gizlenebilir. İsteğe bağlı webhook, Telegram ve e-posta kanalları, kanal başına eşiğin
+üzerindeki alarmları hız sınırlarıyla ve isteğe bağlı bir özetle iletir
+(<a href="library/docs/decisions/0011-webhook-alert-notifications.html">ADR 0011</a>,
+<a href="library/docs/decisions/0015-telegram-and-smtp-receivers.html">ADR 0015</a>). Üretim ana makinesinde bu kanallar
+yapılandırılmamıştır (durum 2026-10-16).</p>
+<h2 id="7-planlanan-harici-itibar-zenginlestirmesi-adr-0018">7. Planlanan: harici itibar zenginleştirmesi (ADR 0018)</h2>
+<p>Durum: <strong>yayımlanmadı</strong>. ADR 0018, 0.6.0 çalışması için
+2026-10-16'da kabul edildi. Çıkış ve yapılandırma temeli ile Shodan InternetDB için bir pilot istemci bir çalışma
+dalında IMPLEMENTED durumdadır ve yalnızca yerel sahte sunuculara karşı birim testinden geçmiştir; bir VM'de veya
+gerçek bir sağlayıcıya karşı gözden geçirme ve doğrulama NOT VERIFIED'dır. AbuseIPDB, GreyNoise, URLhaus ve
+VirusTotal istemcileri PLANNED'dır.</p>
+<p>Tasarım özeti:</p>
+<ul>
+<li>Sabit beş sağlayıcı; ana makine adları kodda sabittir, dolayısıyla operatör bir sağlayıcıyı başka yere
+  yönlendiremez.</li>
+<li>Her sağlayıcı yalnızca arka uç kullanıcısı için kendi açık güvenlik duvarı kuralını gerektirir (bir ila dört
+  sabitlenmiş IPv4 adresi, tek port). Anahtarlar yoksa kural kümesi değişmez.</li>
+<li>Bağlantılar, gerçek ana makine adına karşı sertifika doğrulamasıyla sabitlenmiş adreslere yapılır; yönlendirme
+  yok, proxy yok, 64 KiB yanıt sınırı, sağlayıcı başına günlük ve dakikalık kotalar, hız sınırında kalıcı duraklatma.</li>
+<li>Bir operatör komutu sabitlenmiş adresleri güncel DNS yanıtlarıyla karşılaştırır; güvenlik duvarını hiçbir şey
+  otomatik yenilemez.</li>
+<li>Sonuçlar yalnızca bilgilendiricidir: risk puanını değiştirmez, alarm üretmez veya bastırmaz, IoC dışa aktarımına
+  girmez. Pilot hiçbir zaman "malicious" kararı vermez; çünkü maruziyet verisi saldırgan kararı değildir.</li>
+<li>Bir saldırgan adresini üçüncü tarafa göndermek araştırma ilgisini ifşa etmektir; bu yüzden sağlayıcı başına
+  isteğe bağlıdır ve operatör sağlayıcı şartlarını denetlemelidir.</li>
+</ul>
+<p>Sağlayıcı bilgileri, limitler ve bir DNS anlık görüntüsü araştırma notundadır
+(<a href="library/docs/research/enrichment-providers-2026-10-16.html">zenginleştirme sağlayıcıları, 2026-10-16</a>);
+sağlayıcıların adreslerinin günler boyunca kararlılığı UNVERIFIED'dır.</p>
+<h2 id="8-planlanan-bant-ds-alma-ve-sandbox-adr-0014">8. Planlanan: bant dışı alma ve sandbox (ADR 0014)</h2>
+<p>Saldırgan URL'lerini almak ve örnekleri çalıştırıp incelemek yalnızca PROPOSED'dır ve ertelenmiştir (2026-10-15). Tasarım, sensörü değiştirmeden bırakır; alma ve analizi tek yönlü, yalnızca çekme (pull) veri
+akışlı ayrı makinelere taşır
+(ADR 0014).</p>
+</main>
+<footer>Veri anlık görüntüsü: 2026-10-21 | Kaynak commit: bceebd0 | Savunma amaçlı araştırma; saldırgan göstergeleri etkisizleştirilmiştir (defang)</footer>
+</body>
+</html>
